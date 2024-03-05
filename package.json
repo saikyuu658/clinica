@@ -8,8 +8,16 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "@rive-app/canvas": "^2.10.3",
+    "axios": "^1.6.7",
+    "bulma": "^0.9.4",
     "core-js": "^3.8.3",
-    "vue": "^3.2.13"
+    "primevue": "^3.48.0",
+    "v-calendar": "^3.1.2",
+    "vue": "^3.2.13",
+    "vue-router": "^4.0.13",
+    "vue-the-mask": "^0.11.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
