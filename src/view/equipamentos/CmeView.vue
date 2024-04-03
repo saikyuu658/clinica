@@ -1,288 +1,318 @@
 <template>
     <div>
         <div class="filter">
-            <button class="btn btn-secondary" v-on:click="showDevolModal()">Devolver</button>
-            <button class="btn btn-primary" v-on:click="showEditModal()">Receber</button>
-            <form  @submit.prevent="search">
-                <input type="text" class="form-control" v-model="searchInput" style="width: 200px;">
-            </form>
+            <button class="button is-small is-info" v-on:click="showModal()">Receber</button>
+            <FilterComponent
+                @searchValue="search"
+            ></FilterComponent>
         </div>
     </div>
     <section class="content-table"> 
-        <table class="table" >
-            <thead>
-                <tr>
-                    <th>data rece.</th>
-                    <th>Aluno</th>
-                    <th>Recebido Por</th>
-                    <th>data devol.</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(item, index) in showList" :key="index">
-                    <td>{{ item.dataRece }}</td>
-                    <td>{{ item.aluno }}</td>
-                    <td>{{ item.recebidoPor }}</td>
-                    <td>{{ item.dataDevol }}</td>
-                    <td>{{ item.status }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <DataTable 
+            :value="listComputed" 
+            paginator :rows="11" 
+            :sortOrder="1"
+            sortField="id"
+        >
+            <template #empty> Nenhum registro. </template>
+
+            <Column field="user.name" header="Aluno"></Column>
+            <Column field="dtCreated" header="Dt. Recebido"></Column>
+            <Column field="status" header="Status"></Column>
+            <Column >
+                <template #body>
+                    <span 
+                        v-tooltip.bottom="'Devolver'"
+                        class="material-symbols-outlined">
+                        keyboard_return
+                    </span>
+                </template>
+            </Column>
+        </DataTable>
     </section>
-    <ModalEditarComponent
-        v-show="isModalEditVisible"
-        @close="closeEditModal"
+    <ModalLargeComponent
+        v-show="isReciveModal"
+        @close="closeReciveModal"
     >
         <template v-slot:header>
-            <h4>Receber itens</h4>
+            <h3>Receber</h3>
         </template>
+
         <template v-slot:body>
-            
-            <div class="row-group form-group">
-                    <div class="">
-                        <label> Selecione o Aluno</label>
-                        <select class="form-control" :disabled="controlRecibeItemsInput" style="width: 300px" name=""  id="">
-                            <option>David Pontes Silva</option>
-                        </select>
-                    </div>
-                
+            <div class="row-group">
+                <div class="form-group">
+                    <label for="">Selecionar aluno</label>
+                    <select class="input is-small" style="width: 350px;" id="selectStudent" :disabled="userSelected != 0" >
+                        <option value="" selected disabled>Selecione</option>
+                        <option :value="item.id" v-for="(item, index) of listUser" :key="index">{{ item.name }}</option>
+                    </select>
+                </div>
+                <button class="button is-small is-info form-group" v-show="userSelected == 0" @click="confirmSelectionStudent" >
+                    Confirmar
+                </button>
 
-                    <button class="btn btn-success" :disabled="controlRecibeItemsInput" v-on:click="confirAlunoRecibe">Confirmar</button>
+                <button class="button is-small is-info form-group" @click="AlterSelectionStudent" v-show="userSelected != 0">
+                    Alterar
+                </button>
             </div>
-            
-            <div class="content-list">
-                <form  @submit.prevent="addListItems">
-                    <div class="row-group form-group">
-                        <div class="">
-                            <label for="">Nome do item</label>
-                            <input type="text" v-model="item.name" :disabled="!controlRecibeItemsInput" class="form-control" style="width: 300px"  >
+
+            <div class="content-body" v-show="userSelected != 0">
+                <form @submit.prevent="addItemList">
+                    <div class="row-group">
+                        <div class="form-group">
+                            <label for="">Qtd</label>
+                            <input type="number" v-model="newItem.qtd" style="width: 100px;" class="input is-small">
                         </div>
-                        <div class="">
-                            <label for="">Quantidade</label>
-                            <input type="number" v-model="item.qtd" :disabled="!controlRecibeItemsInput" class="form-control" style="width: 50px;" >
+                        <div class="form-group">
+                            <label for="">Lista de Itens</label>
+                            <select class="input is-small" style="width: 300px;" id="" v-model="newItem.name">
+                                <option value="" disabled>Selecione</option>
+                                <option :value="item.name" v-for="(item, index) of listItemCme" :key="index">{{ item.name }}</option>
+                            </select>
                         </div>
 
-                        <button class="btn btn-primary" :disabled="!controlRecibeItemsInput">Adicionar</button>
+                        <button class="button is-small is-primary form-group">
+                            <span class="material-symbols-outlined">
+                                add
+                            </span>
+                        </button>
                     </div>
                 </form>
-
-                <div class="content-list-itens">
-                    <table class="table table-hover">
-                        <tbody>
-                            <tr v-for="(element, index) in listItens" :key="index">
-                                <th style="width: 10%">{{ element.qtd }} x</th>
-                                <td style="width: 80%">{{ element.name }}</td>
-                                <td style="width: 10%"> 
-                                    <button class="btn btn-danger" v-on:click="removeListItem(index)"><i class="fa fa-trash" aria-hidden="true"></i></button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>  
-                </div> 
-                <h5 class="total-items">
-                    Total: {{ totalItens }} items
-                </h5>
+                
             </div>
+
+            <div class="content-list-table">
+                <table class="list-equip-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 100px; padding-left: 5px;">Qtd</th>
+                            <th>Nome</th>
+                            <th style="width: 100px;">Remover</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(item, index) of listItem" :key="index">
+                            <td>{{ item.qtd }}</td>
+                            <td>{{ item.item }}</td>
+                            <td>
+                                <button class="button is-danger is-small" @click="rmItemList(index)">
+                                    <span class="material-symbols-outlined">
+                                        delete
+                                    </span>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            
+            </div>
+
         </template>
+
         <template v-slot:footer>
-            <div class="d-flex justify-content-between px-2">
-                <button class="btn btn-danger" v-on:click="closeEditModal()">
-                    Cancelar
-                </button>
-                <button class="btn btn-primary" v-on:click="showConfirmModal()" :disabled="!controlRecibeItemsInput">
-                    Finalizar
-                </button>
-            </div>
+            <button class="button is-info is-small" :disabled="userSelected == 0" @click="createCme()">
+                Salvar
+            </button>
         </template>
-    </ModalEditarComponent>
+    </ModalLargeComponent>
 
-    
+    <LoadingComponentVue
+        v-show="isLoading"
+    ></LoadingComponentVue>
+
+
 </template>
 <script>
-import ModalAddComponent from '@/components/modalAddComponent';
-import ModalConfirmComponent from '@/components/modalConfirComponent.vue';
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column';
+import ModalLargeComponent from '@/components/ModalLargeComponent.vue';
+import FilterComponent from '@/components/FilterComponent.vue';
+import RequestHttp from '@/http';
+import LoadingComponentVue from '@/components/LoadingComponent.vue';
+
+
 export default {
     components: {
-        ModalAddComponent,
-        ModalConfirmComponent
+        ModalLargeComponent,
+        DataTable,
+        Column,
+        FilterComponent,
+        LoadingComponentVue
     },
     data(){
         return {
-            isModalEditVisible: false,
-            isModalConfirVisible: false,
-            isModalDevolVisible: false,
-
-
-            controlRecibeItemsInput: false,
-            controlDevolItemsInput: false,
-
-
             searchInput: "",
-            listMessage: [
-                {
-                    dataRece: "29/01/2024",
-                    aluno: "David Pontes", 
-                    recebidoPor: "David Pontes",
-                    dataDevol: "29/01/2024",
-                    status: "devolvido"
-                },
-                {
-                    dataRece: "29/01/2024",
-                    aluno: "Nubia Pontes", 
-                    recebidoPor: "David Pontes",
-                    dataDevol: "29/01/2024",
-                    status: "devolvido"
-                },
-                {
-                    dataRece: "29/01/2024",
-                    aluno: "Abraao Pontes", 
-                    recebidoPor: "David Pontes",
-                    dataDevol: "29/01/2024",
-                    status: "devolvido"
-                },
-            ],
+            listCme: [],
 
-            showList: [],
-            item: {
-                name: "",
-                qtd: 1
+            newItem:{
+                qtd: 1,
+                name: ''
             },
-            totalItens : 0,
-            listItens: [
-                 
-            ],
+            /**lista de itens para gravar*/
+            listItem: [],
+            userSelected: 0,
 
+            /**lista de itens para selecionar*/
+            listItemCme: [],
+            isLoading: [],
+            listUser: [],
+            isReciveModal: false,
         }
     },
     methods: {
 
-        confirAlunoRecibe(){
-            this.controlRecibeItemsInput = true;
+        AlterSelectionStudent(){
+            this.userSelected = 0;
         },
 
-        confirAlunoDevol(){
-            this.controlDevolItemsInput = true;
-        },
-
-        showConfirmModal(){ 
-            if(this.listItens.length <= 0){
-                return
-            }
-            this.isModalConfirVisible = true;
-        },
-
-        closeDevolModal(){
-            this.isModalDevolVisible = false;
-        },
-
-        closeConfirmModal(){
-            this.isModalConfirVisible = false;
-        },
-
-        saveConfirmModal(credential){
-            this.closeConfirmModal();
-
-        },
-
-        showEditModal() {
-            this.isModalEditVisible = true;
-        },
-
-        showDevolModal() {
-            this.isModalDevolVisible = true;
-            this.totalItens = 0
-            for (let i = 0; i < 10; i++) {
-                this.listItens.push({
-                    name: "item" + i.toString(),
-                    qtd: i
-                })
-            }
-            this.listItens.forEach(element => {
-                 this.totalItens += parseFloat(element.qtd)
-            });
+        confirmSelectionStudent(){
+            this.userSelected = document.querySelector('#selectStudent').value;
         },
         
-
-        closeEditModal() {
-            this.isModalEditVisible = false;
-            this.listItens = [];
-            this.controlRecibeItemsInput = false;
-            this.item = {
-                name: "",
-                qtd: 1
-            }
+        closeReciveModal(){
+            this.isReciveModal = false;
+            this.userSelected = 0;
+            this.cleanFields();
         },
-        
-        search(){
-            this.showList = [];
-            if(this.searchInput == ""){
-                this.showList = this.listMessage;
+
+        cleanFields(){
+            this.listItem = [];
+            this.userSelected = 0;
+            this.newItem = { name : '', qtd: 1}
+            document.querySelector('#selectStudent').value = ""
+        },
+
+        async showModal(){
+            this.isReciveModal = true;
+            const resp = await RequestHttp.listUser();
+            if(resp.hasError){
+                this.isLoading = false
+                this.$toast.add({ severity: 'error', summary: 'Erro', detail: resp.response.data.message, life: 3000 })
+
             }else{
-                this.showList = this.listMessage.filter((e)=> {
-                    if(e.aluno.toLowerCase().includes(this.searchInput.toLowerCase())){
+                this.isLoading = false
+                this.listUser = resp;
+            }
+        },
+        
+        search(value){
+            this.searchInput = value;
+        },
+
+        addItemList(){
+            if(this.newItem.qtd == 0 || this.newItem.name == ''){
+                this.$toast.add({ severity: 'warn', summary: 'Alerta', detail: "Preencha as informações corretamente", life: 3000 })
+                return 
+            }
+            this.listItem.push(this.newItem)
+            this.newItem = {qtd: 1, name : ''}
+        },
+        
+        rmItemList(index){
+            this.listItem.splice(index, 1);
+        },
+
+        async findAllCme(){
+            this.isLoading = true
+            const resp =await RequestHttp.listCme();
+
+            if(resp.hasError){
+                this.isLoading = false
+                this.$toast.add({ severity: 'error', summary: 'Erro', detail: resp.response.data.message, life: 3000 })
+
+            }else{
+                console.log(resp);
+                this.isLoading = false
+                this.listCme = resp;
+            }
+        },
+
+        async toListItemCme(){
+            this.isLoading = true
+            const resp =await RequestHttp.listItensCme();
+            if(resp.hasError){
+                this.isLoading = false
+                this.$toast.add({ severity: 'error', summary: 'Erro', detail: resp.response.data.message, life: 3000 })
+
+            }else{
+                this.isLoading = false
+                this.listItemCme = resp;
+            }
+        },
+
+        async createCme(){
+            this.isLoading = true
+            const createNewCme = {
+                id:  this.userSelected,
+                cme: this.listItem
+            }
+
+            console.log(createNewCme);
+            const resp =await RequestHttp.createCme(createNewCme);
+            if(resp.hasError){
+                this.isLoading = false
+                this.$toast.add({ severity: 'error', summary: 'Erro', detail: resp.response.data.message, life: 3000 })
+            }else{
+                this.$toast.add({ severity: 'success', summary: '', detail: "Registrado com sucesso!", life: 3000 })
+                this.findAllCme()
+            }
+        }
+      
+    },
+    computed: {
+        listComputed(){
+            if(this.searchInput == ""){
+                return this.listCme;
+            }else{
+                return this.listCme
+                .filter((e)=> {
+                    if(
+                        e.name.toLowerCase().includes(this.searchInput.toLowerCase()) ||
+                        e.clinic.toLowerCase().includes(this.searchInput.toLowerCase()) 
+                        ){
                         return e;
                     }
                 })
             }
-        },
-
-        addListItems(){
-            if(this.item.qtd <= 0){
-                return
-            }
-            this.listItens.push(this.item)
-            this.item = {
-                name : "",
-                qtd: 1            
-            }
-            this.totalItens = 0;
-            this.listItens.forEach(element => {
-                 this.totalItens += parseFloat(element.qtd)
-            });
-
-           
-        }
-        ,
-
-        removeListItem(index){
-            this.listItens.splice(index, 1)
-
-            this.totalItens = 0;
-            this.listItens.forEach(element => {
-                 this.totalItens += parseFloat(element.qtd)
-            });
         }
     },
     created(){
-        this.search()
+        this.findAllCme();
+        this.toListItemCme();
     }
    
 }
 </script>
 <style scoped>
    
-    
-  
-    .content-list-itens, .content-list-items-devol{
+    .content-list-table{
+        position: absolute;
+        bottom: 50px;
+        left: 7px;
+        top: 130px;
         overflow: auto;
-        height: calc(100vh /2);
-    }
-   
-    label{
-        font-weight: 600;
-    }
-    .row-group{
-        align-items: end;
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
+        width: 600px;
+        
     }
 
-    .form-group{
-        margin-bottom: 20px;
+    .list-equip-table{
+        width: 100%;
+    }
+    .list-equip-table thead{
+        position: sticky;
+        padding: 5px;
+        top: -2px;
+        background-color: #c9c9c9;
+        border-collapse: collapse;
+        z-index: 2;
+        border: solid 1px #00000035;
+
     }
 
+    .list-equip-table tbody td{
+        padding: 5px;
+        border-bottom: solid 1px #00000035;
+    }
     .filter{
         position: absolute;
         top: 5px;
@@ -307,16 +337,12 @@ export default {
         box-shadow: 0 0 10px #00000020;
         border-radius: 3px;
         margin: 5px;
+        padding: 15px;
         overflow: auto;
     }
 
    
-    .content-table thead th { 
-        position: sticky; 
-        top: 0; 
-        z-index: 1; 
-        padding-block: 15px;
-    }
+   
 
     
 </style>

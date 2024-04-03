@@ -1,8 +1,11 @@
 <script>
    import SideBarComponent from "@/components/SideBarComponent.vue"
    import RequestHttp from "../http"
+    import Toast from "primevue/toast"
+
     export default {
         components: {
+            Toast,
            SideBarComponent
         },
 
@@ -42,7 +45,9 @@
     <div class="body">
         <router-view></router-view>
     </div>
+    <Toast></Toast>
 </template>
+
 <style>
     .body{
         position: absolute;

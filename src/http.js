@@ -155,7 +155,7 @@ class RequestHttp {
             if(!getToken()) {
                 throw new Error('Sem token')
             }
-            const response = await axios.get(API_URL + 'lists/list', { headers: { Authorization: `Bearer ${token.token_acess}` }}).then((resp)=>{
+            const response = await axios.get(API_URL + 'lists/listTriagem', { headers: { Authorization: `Bearer ${token.token_acess}` }}).then((resp)=>{
                 return resp.data
             })
             return response
@@ -164,6 +164,58 @@ class RequestHttp {
             return error;
         }
     }
+
+    //------------ CME requests
+
+    async listCme(){
+        try {
+            if(!getToken()) {
+                throw new Error('Sem token')
+            }
+            const response = await axios.get(API_URL + 'cme/list', { headers: { Authorization: `Bearer ${token.token_acess}` }}).then((resp)=>{
+                return resp.data
+            })
+            return response
+        } catch (error) {
+            error.hasError = true;
+            return error;
+        }
+    }
+
+
+    async createCme(newCme){
+        try {
+            if(!getToken()) {
+                throw new Error('Sem token')
+            }
+            const response = await axios.post(API_URL + 'cme/createCme', newCme, { headers: { Authorization: `Bearer ${token.token_acess}` }}).then((resp)=>{
+                return resp.data
+            });
+            return response
+        } catch (error) {
+            error.hasError = true;
+            return error;
+        }
+    }
+
+
+    async listItensCme(){
+        try {
+            if(!getToken()) {
+                throw new Error('Sem token')
+            }
+            const response = await axios.get(API_URL + 'lists/listCme', { headers: { Authorization: `Bearer ${token.token_acess}` }}).then((resp)=>{
+                return resp.data
+            })
+            return response
+        } catch (error) {
+            error.hasError = true;
+            return error;
+        }
+    }
+
+
+
 
     
 

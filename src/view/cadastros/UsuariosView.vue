@@ -156,7 +156,6 @@
     </ModalComponentVue>
 
     <LoadingComponentVue v-show="isLoading"></LoadingComponentVue>
-    <Toast/>
 </template>
 <script>
 import ModalComponentVue from '@/components/ModalComponent.vue'
@@ -164,7 +163,6 @@ import FilterComponent from '@/components/FilterComponent.vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import RequestHttp from '@/http'
-import Toast from "primevue/toast"
 import {mask} from 'vue-the-mask'
 import LoadingComponentVue from '@/components/LoadingComponent.vue';
 
@@ -174,7 +172,6 @@ export default {
         ModalComponentVue,
         DataTable,
         Column,
-        Toast,
         LoadingComponentVue
     },
 

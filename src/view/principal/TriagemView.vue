@@ -115,13 +115,13 @@
 
     <section class="content-table" v-if="tablesUsed == 'clinic'">
         <DataTable 
-            :sortOrder="1"
             expandableRowGroups 
             :value="listComputed" 
-            rowGroupMode="subheader" 
-            sortField="clinic"
-            groupRowsBy="clinic"
             paginator :rows="11" 
+            :sortOrder="1"
+            sortField="clinic"
+            rowGroupMode="subheader" 
+            groupRowsBy="clinic"
             v-model:expandedRowGroups="expandedRowGroups"
             >
             <template #empty> Nenhum procedimento registrado. </template>
@@ -379,7 +379,6 @@
     </ModalSmallComponentVue>
 
 
-    <Toast/>
 
     <LoadingComponentVue v-show="isLoading"></LoadingComponentVue>
 
@@ -393,7 +392,6 @@ import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import SideFilterComponent from "@/components/SideFilterComponent.vue"
 import RequestHttp from '@/http';
-import Toast from 'primevue/toast'
 import {mask} from 'vue-the-mask'
 import ModalSmallComponentVue from '@/components/ModalSmallComponent.vue'
 import LoadingComponentVue from '@/components/LoadingComponent.vue'
@@ -409,7 +407,6 @@ export default {
         DataTable,
         Column,
         SideFilterComponent,
-        Toast,
         LoadingComponentVue
     },
     directives: {mask},
