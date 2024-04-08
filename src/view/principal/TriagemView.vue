@@ -185,11 +185,11 @@
                     <div class="row-group">
                         <div class="form-group">
                             <label for="">Nome Completo</label>
-                            <input type="text" v-model="newPatient.name" class="input is-small" style="width: 300px;" >
+                            <input type="text" :disabled="disablefields" v-model="newPatient.name" class="input is-small" style="width: 300px;" >
                         </div>
                         <div class="form-group">
                             <label for="">Telefone</label>
-                            <input type="tel" v-mask="'(##) # ####-####'" v-model="newPatient.phone" class="input is-small"  >
+                            <input type="tel" :disabled="disablefields" v-mask="'(##) # ####-####'" v-model="newPatient.phone" class="input is-small"  >
                         </div>
                     </div>
 
@@ -197,19 +197,19 @@
                         
                         <div class="form-group">
                             <label for="">Data Nasc.</label>
-                            <input type="date" v-model="newPatient.dt_birth" class="input is-small" >
+                            <input type="date" :disabled="disablefields" v-model="newPatient.dt_birth" class="input is-small" >
                         </div>
 
                         <div class="form-group">
                             <label for="">Genero</label>
-                            <select class="input is-small" v-model="newPatient.gender" >
+                            <select class="input is-small" :disabled="disablefields" v-model="newPatient.gender" >
                                 <option value="m" >Masculino</option>
                                 <option value="f" >Femenino</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="">Estado Civil</label>
-                            <select class="input is-small"  v-model="newPatient.civil_state"  >
+                            <select class="input is-small" :disabled="disablefields" v-model="newPatient.civil_state"  >
                                 <option value="a" >Solteiro(a)</option>
                                 <option value="c" >Casado(a)</option>
                                 <option value="s" >Separado(a)</option>
@@ -221,33 +221,33 @@
                     
                     <div class="form-group">
                         <label for="">Nome do responsável (Se Houver)</label>
-                        <input type="text" v-model="newPatient.resp_name"  class="input is-small"  >
+                        <input type="text" :disabled="disablefields" v-model="newPatient.resp_name"  class="input is-small"  >
                     </div>
 
                     
                     <div class="row-group">
                         <div class="form-group">
                             <label for="">Profissão</label>
-                            <input type="text" v-model="newPatient.profession"  class="input is-small"  >
+                            <input type="text" :disabled="disablefields" v-model="newPatient.profession"  class="input is-small"  >
                         </div>
                         <div class="form-group">
                             <label for="">Local de trabalho</label>
-                            <input type="text"  class="input is-small" v-model="newPatient.locale_work">
+                            <input type="text" :disabled="disablefields" class="input is-small" v-model="newPatient.locale_work">
                         </div>
                     </div>
                     
                     <div class="row-group">
                         <div class="form-group">
                             <label for="">Endereço</label>
-                            <input type="text" style="width: 300px;" class="input is-small" v-model="newPatient.address" >
+                            <input type="text" style="width: 300px;" :disabled="disablefields" class="input is-small" v-model="newPatient.address" >
                         </div>
                         <div class="form-group">
                             <label for="">Bairro</label>
-                            <input type="text" v-model="newPatient.district"  class="input is-small"  >
+                            <input type="text" v-model="newPatient.district" :disabled="disablefields"  class="input is-small"  >
                         </div>
                         <div class="form-group">
                             <label for="">Cidade</label>
-                            <input type="text"  class="input is-small"  v-model="newPatient.city">
+                            <input type="text"  class="input is-small" :disabled="disablefields"  v-model="newPatient.city">
                         </div>
                         
                     </div>
@@ -258,7 +258,7 @@
                         <div class="row-group">
                             <div class="form-group "  >
                                 <label for="">Procedimento</label>
-                                <select class="input is-small" style="width:450px;" v-model="inputsProcedure.name">
+                                <select class="input is-small" :disabled="disablefields" style="width:450px;" v-model="inputsProcedure.name">
                                     <option :value="item.name" v-for="(item, index) of listOptionsProcedures" :key="index">
                                         {{ item.name }}
                                     </option>
@@ -267,7 +267,7 @@
 
                             <div class="form-group">
                                 <label for="">Clínica</label>
-                                <select class="input is-small" style="width:450px;" v-model="inputsProcedure.clinic">
+                                <select class="input is-small" :disabled="disablefields" style="width:450px;" v-model="inputsProcedure.clinic">
                                     <option :value="item.name" v-for="(item, index) of listOptionsClinics" :key="index">
                                         {{ item.name }}
                                     </option>
@@ -277,7 +277,7 @@
                         <div class="row-group">
                             <div class="form-group">
                                 <label for="">Elementos Dentários</label>
-                                <select class="input is-small" v-model="inputsProcedure.element_dental">
+                                <select class="input is-small" :disabled="disablefields" v-model="inputsProcedure.element_dental">
                                     <option :value="item.name" v-for="(item, index) of listOptionsElemetsDentr" :key="index">
                                         {{ item.name }}
                                     </option>
@@ -285,7 +285,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="">Regiões dos Elementos Dentários</label>
-                                <select class="input is-small" style="width:295px;" v-model="inputsProcedure.region_dental">
+                                <select class="input is-small" :disabled="disablefields" style="width:295px;" v-model="inputsProcedure.region_dental">
                                     <option :value="item.name" v-for="(item, index) of listOptionsRegions" :key="index">
                                         {{ item.name }}
                                     </option>
@@ -293,7 +293,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="">Regiões da Cavidade Bucal</label>
-                                <select class="input is-small" style="width:295px;" v-model="inputsProcedure.buccal_cavity">
+                                <select class="input is-small" :disabled="disablefields" style="width:295px;" v-model="inputsProcedure.buccal_cavity">
                                     <option :value="item.name" v-for="(item, index) of listOptionsCavBucal" :key="index">
                                         {{ item.name }}
                                     </option>
@@ -302,7 +302,7 @@
                             
 
                             <div class="form-group">
-                                <button class="button is-small is-success">
+                                <button class="button is-small is-success" :disabled="disablefields">
                                     <span class="material-symbols-outlined">
                                         add
                                     </span>
@@ -461,7 +461,9 @@ export default {
 
             listOptionsCavBucal : [],
 
-            tablesUsed: 'procedure'
+            tablesUsed: 'procedure',
+
+            disablefields: true
         }
     },
     methods: {
@@ -470,6 +472,7 @@ export default {
             this.tempValuesProcedureUpdated = null;
             this.isModalSmall = false;
         },
+        
         showSmallModal(val){
             this.isModalSmall = true;
             this.tempValuesProcedureUpdated = val;
@@ -499,9 +502,9 @@ export default {
             if(resp.hasError){
                 this.isLoading = false
                 this.$toast.add({ severity: 'error', summary: 'Erro', detail: resp.response.data.message, life: 3000 })
-
             }else{
                 this.isLoading = false
+                this.disablefields = true;
                 this.isModalVisible = true;
                 this.listOptionsClinics = resp.filter(e=> e.type == 'c')
                 this.listOptionsProcedures = resp.filter(e=> e.type == 'p')
@@ -536,18 +539,30 @@ export default {
             return data.toLocaleDateString()
         },
 
-        async save(){
 
+        async save(){
+            const regex = /\.|-|\(|\)/gi
+            this.newPatient.cpf = this.newPatient.cpf.replaceAll(regex, '').replaceAll(' ', '');
+            this.newPatient.phone = this.newPatient.phone.replaceAll(regex, '').replaceAll(' ', '');
+            
             if(this.newListProcedures.length == 0 ){
                 this.$toast.add({ severity: 'warn', summary: 'Alerta', detail: "Nenhum procedimento registrado", life: 3000 })
                 return
             }
-        
+            if(this.newPatient.cpf.length < 11) {
+                this.$toast.add({ severity: 'warn', summary: 'Alerta', detail: 'CPF inválido', life: 3000 }) 
+                return
+            }
+            if(this.newPatient.phone.length < 11) {
+                this.$toast.add({ severity: 'warn', summary: 'Alerta', detail: 'Telefone inválido', life: 3000 }) 
+                return
+            }
             this.isLoading = true;
-            const regex = /\.|-|\(|\)/gi
-            this.newPatient.cpf = this.newPatient.cpf.replaceAll(regex, '').replaceAll(' ', '');
-            this.newPatient.phone = this.newPatient.phone.replaceAll(regex, '').replaceAll(' ', '');
             let temp = this.newPatient;
+            console.log(temp)
+            Object.keys(temp).forEach((k) =>{
+                if(typeof(temp[k]) == 'string') temp[k].trim();
+            } );
 
             temp.procedures = this.newListProcedures;
             const resp = await RequestHttp.createPatient(temp)
@@ -603,10 +618,13 @@ export default {
         async findByCpf(){
 
             const regex = /\.|-|/gi
-            this.isLoading = true;
             this.newPatient.cpf = this.newPatient.cpf.replaceAll(regex, '');
+            if(this.newPatient.cpf.length < 11) {
+                this.$toast.add({ severity: 'warn', summary: 'Alerta', detail: 'CPF inválido', life: 3000 }) 
+                return
+            }
+            this.isLoading = true;
             const resp = await RequestHttp.findByCpf(this.newPatient.cpf)
-           
 
             if(resp.hasError){
                 this.isLoading = false;
@@ -623,6 +641,7 @@ export default {
                 this.isModalVisible = false;
             }else{
                 this.isLoading = false;
+                this.disablefields = false;
 
                 if(resp.length == 0){
                     let temp = this.newPatient.cpf;

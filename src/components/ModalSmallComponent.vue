@@ -4,8 +4,10 @@
             <slot name="body">
                 <h2>Default</h2>
             </slot>
-            <slot name="footer">
-            </slot>
+            <div class="bg-small-footer">
+                <slot name="footer">
+                </slot>
+            </div>
         </section>
     </div>
 </template>
@@ -34,6 +36,16 @@ export default {
         align-items: center;
         background-color: #0000000a;
         z-index: 10;
+    }
+
+    .bg-small-footer{
+        position: absolute;
+        bottom: 10px;
+        gap: 10px;
+        left: 0;
+        right: 10px;
+        display: flex;
+        justify-content: end;
     }
     .confirm-dialog{
         position: relative;

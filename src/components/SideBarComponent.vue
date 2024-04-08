@@ -21,13 +21,13 @@
                     </span>
                 </li>
             </router-link>
-            <!-- <router-link :to="'/home/cme'"  v-slot="{ isActive}" v-show="access != 'a'">
+            <router-link :to="'/home/cme'"  v-slot="{ isActive}" v-show="access != 'a'">
                 <li v-bind:class="isActive? 'actived' : ''" v-tooltip="'CME'">
                     <span class="material-symbols-outlined">
                         reset_wrench
                     </span>
                 </li>
-            </router-link> -->
+            </router-link>
             <li v-on:click="logout">
                 <span class="material-symbols-outlined">
                     logout

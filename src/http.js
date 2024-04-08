@@ -89,7 +89,6 @@ class RequestHttp {
     }
 
     // -------- triagem requests
-
     async listProcedures(){
         try {
             if(!getToken()) {
@@ -107,9 +106,11 @@ class RequestHttp {
 
     async findByCpf(cpf){
         try {
+
             if(!getToken()) {
                 throw new Error('Sem token')
             }
+
             const response = await axios.get(API_URL + 'triagem/findPatientByCpf/'+ cpf, { headers: { Authorization: `Bearer ${token.token_acess}` }}).then((resp)=>{
                 return resp.data
             })
@@ -165,14 +166,13 @@ class RequestHttp {
         }
     }
 
-    //------------ CME requests
-
-    async listCme(){
+    //------------ Sterilize requests
+    async listSterilize(){
         try {
             if(!getToken()) {
                 throw new Error('Sem token')
             }
-            const response = await axios.get(API_URL + 'cme/list', { headers: { Authorization: `Bearer ${token.token_acess}` }}).then((resp)=>{
+            const response = await axios.get(API_URL + 'sterilize/list', { headers: { Authorization: `Bearer ${token.token_acess}` }}).then((resp)=>{
                 return resp.data
             })
             return response
@@ -182,13 +182,12 @@ class RequestHttp {
         }
     }
 
-
-    async createCme(newCme){
+    async createSterilize(sterilize, credential){
         try {
             if(!getToken()) {
                 throw new Error('Sem token')
             }
-            const response = await axios.post(API_URL + 'cme/createCme', newCme, { headers: { Authorization: `Bearer ${token.token_acess}` }}).then((resp)=>{
+            const response = await axios.post(API_URL + 'sterilize/create/'+credential, sterilize, { headers: { Authorization: `Bearer ${token.token_acess}` }}).then((resp)=>{
                 return resp.data
             });
             return response
@@ -199,12 +198,27 @@ class RequestHttp {
     }
 
 
-    async listItensCme(){
+    async sendEmail(){
         try {
             if(!getToken()) {
                 throw new Error('Sem token')
             }
-            const response = await axios.get(API_URL + 'lists/listCme', { headers: { Authorization: `Bearer ${token.token_acess}` }}).then((resp)=>{
+            const response = await axios.post(API_URL + 'sterilize/sendEmail',{email: 'david.silva@flucianofeijao.com.br'}, { headers: { Authorization: `Bearer ${token.token_acess}` }}).then((resp)=>{
+                return resp.data
+            });
+            return response
+        } catch (error) {
+            error.hasError = true;
+            return error;
+        }
+    }
+
+    async listItensSterilize(){
+        try {
+            if(!getToken()) {
+                throw new Error('Sem token')
+            }
+            const response = await axios.get(API_URL + 'lists/listSterilize', { headers: { Authorization: `Bearer ${token.token_acess}` }}).then((resp)=>{
                 return resp.data
             })
             return response

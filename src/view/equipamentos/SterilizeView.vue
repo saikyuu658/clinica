@@ -16,9 +16,17 @@
         >
             <template #empty> Nenhum registro. </template>
 
-            <Column field="user.name" header="Aluno"></Column>
-            <Column field="dtCreated" header="Dt. Recebido"></Column>
-            <Column field="status" header="Status"></Column>
+            <Column field="codStudent" header="Cod. Aluno"></Column>
+            <Column field="createdAt" header="Dt. Recebido">
+                <template #body="slotProps">
+                    {{ formatDate(slotProps.data.createdAt) }}
+                </template>
+            </Column>
+            <Column field="status" header="Status">
+                <template #body="slotProps">
+                    {{ slotProps.data.status === 'r'? 'Recebido': 'Devolvido'}}
+                </template>
+            </Column>
             <Column >
                 <template #body>
                     <span 
@@ -67,7 +75,7 @@
                             <label for="">Lista de Itens</label>
                             <select class="input is-small" style="width: 300px;" id="" v-model="newItem.name">
                                 <option value="" disabled>Selecione</option>
-                                <option :value="item.name" v-for="(item, index) of listItemCme" :key="index">{{ item.name }}</option>
+                                <option :value="item.name" v-for="(item, index) of listItemSterilize" :key="index">{{ item.name }}</option>
                             </select>
                         </div>
 
@@ -93,7 +101,7 @@
                     <tbody>
                         <tr v-for="(item, index) of listItem" :key="index">
                             <td>{{ item.qtd }}</td>
-                            <td>{{ item.item }}</td>
+                            <td>{{ item.name }}</td>
                             <td>
                                 <button class="button is-danger is-small" @click="rmItemList(index)">
                                     <span class="material-symbols-outlined">
@@ -110,12 +118,33 @@
         </template>
 
         <template v-slot:footer>
-            <button class="button is-info is-small" :disabled="userSelected == 0" @click="createCme()">
+            <button class="button is-info is-small" :disabled="userSelected == 0" @click="showSmallModal()">
                 Salvar
             </button>
         </template>
     </ModalLargeComponent>
+    <ModalSmallComponentVue
+        @close="closeSmallModal"
+        v-show="isVisibleModalConfirm"
+    >
+        <template v-slot:body>
+            
+            <div class="form-group" >
+                <label for="">Confirmação de segurança</label>
+                <input type="text" style="width: 100%;" class="input is-small" v-model="credential">
+            </div>
+        </template>
 
+        <template v-slot:footer>
+            <button class="button is-danger is-small" @click="closeSmallModal()">
+                Cancelar
+            </button>
+            <button class="button is-info is-small" @click="createSterilize()">
+                Confirmar
+            </button>
+        </template>
+
+    </ModalSmallComponentVue>
     <LoadingComponentVue
         v-show="isLoading"
     ></LoadingComponentVue>
@@ -129,10 +158,12 @@ import ModalLargeComponent from '@/components/ModalLargeComponent.vue';
 import FilterComponent from '@/components/FilterComponent.vue';
 import RequestHttp from '@/http';
 import LoadingComponentVue from '@/components/LoadingComponent.vue';
+import ModalSmallComponentVue from '@/components/ModalSmallComponent.vue';
 
 
 export default {
     components: {
+        ModalSmallComponentVue,
         ModalLargeComponent,
         DataTable,
         Column,
@@ -142,7 +173,7 @@ export default {
     data(){
         return {
             searchInput: "",
-            listCme: [],
+            listSterilize: [],
 
             newItem:{
                 qtd: 1,
@@ -151,15 +182,41 @@ export default {
             /**lista de itens para gravar*/
             listItem: [],
             userSelected: 0,
-
+            credential: "",
             /**lista de itens para selecionar*/
-            listItemCme: [],
-            isLoading: [],
+            listItemSterilize: [],
+            isLoading: false,
             listUser: [],
             isReciveModal: false,
+
+            isVisibleModalConfirm: false
         }
     },
     methods: {
+
+        async showSmallModal(){
+            const resp = await RequestHttp.sendEmail();
+            if(resp.hasError){
+                this.isLoading = false
+                this.$toast.add({ severity: 'error', summary: 'Erro', detail: resp.response.data.message, life: 3000 })
+            }else{
+                this.isLoading = false
+                this.isVisibleModalConfirm = true;
+            }
+
+        },
+
+        closeSmallModal(){
+            this.credential = '';
+            this.isVisibleModalConfirm  = false
+
+
+        },
+
+        formatDate(val){
+            const data = new Date(val);
+            return data.toLocaleDateString()
+        },
 
         AlterSelectionStudent(){
             this.userSelected = 0;
@@ -188,7 +245,6 @@ export default {
             if(resp.hasError){
                 this.isLoading = false
                 this.$toast.add({ severity: 'error', summary: 'Erro', detail: resp.response.data.message, life: 3000 })
-
             }else{
                 this.isLoading = false
                 this.listUser = resp;
@@ -212,49 +268,47 @@ export default {
             this.listItem.splice(index, 1);
         },
 
-        async findAllCme(){
+        async findAllSterilize(){
             this.isLoading = true
-            const resp =await RequestHttp.listCme();
+            const resp =await RequestHttp.listSterilize();
+            if(resp.hasError){
+                this.isLoading = false
+                this.$toast.add({ severity: 'error', summary: 'Erro', detail: resp.response.data.message, life: 3000 })
+            }else{
+                this.isLoading = false
+                this.listSterilize = resp;
+            }
+        },
 
+        async toListItemSterilize(){
+            this.isLoading = true
+            const resp =await RequestHttp.listItensSterilize();
             if(resp.hasError){
                 this.isLoading = false
                 this.$toast.add({ severity: 'error', summary: 'Erro', detail: resp.response.data.message, life: 3000 })
 
             }else{
-                console.log(resp);
                 this.isLoading = false
-                this.listCme = resp;
+                this.listItemSterilize = resp;
             }
         },
 
-        async toListItemCme(){
+        async createSterilize(){
             this.isLoading = true
-            const resp =await RequestHttp.listItensCme();
-            if(resp.hasError){
-                this.isLoading = false
-                this.$toast.add({ severity: 'error', summary: 'Erro', detail: resp.response.data.message, life: 3000 })
-
-            }else{
-                this.isLoading = false
-                this.listItemCme = resp;
-            }
-        },
-
-        async createCme(){
-            this.isLoading = true
-            const createNewCme = {
-                id:  this.userSelected,
-                cme: this.listItem
+            const createNewSterilize = {
+                codStudent:  this.userSelected,
+                sterilize: this.listItem,
             }
 
-            console.log(createNewCme);
-            const resp =await RequestHttp.createCme(createNewCme);
+            const resp = await RequestHttp.createSterilize(createNewSterilize, this.credential);
             if(resp.hasError){
                 this.isLoading = false
                 this.$toast.add({ severity: 'error', summary: 'Erro', detail: resp.response.data.message, life: 3000 })
             }else{
                 this.$toast.add({ severity: 'success', summary: '', detail: "Registrado com sucesso!", life: 3000 })
-                this.findAllCme()
+                this.isReciveModal = false;
+                this.isVisibleModalConfirm = false;
+                this.findAllSterilize()
             }
         }
       
@@ -262,9 +316,9 @@ export default {
     computed: {
         listComputed(){
             if(this.searchInput == ""){
-                return this.listCme;
+                return this.listSterilize;
             }else{
-                return this.listCme
+                return this.listSterilize
                 .filter((e)=> {
                     if(
                         e.name.toLowerCase().includes(this.searchInput.toLowerCase()) ||
@@ -277,8 +331,8 @@ export default {
         }
     },
     created(){
-        this.findAllCme();
-        this.toListItemCme();
+        this.findAllSterilize();
+        this.toListItemSterilize();
     }
    
 }
@@ -292,7 +346,6 @@ export default {
         top: 130px;
         overflow: auto;
         width: 600px;
-        
     }
 
     .list-equip-table{
@@ -312,6 +365,10 @@ export default {
     .list-equip-table tbody td{
         padding: 5px;
         border-bottom: solid 1px #00000035;
+    }
+
+    .material-symbols-outlined{
+        cursor: pointer;
     }
     .filter{
         position: absolute;
