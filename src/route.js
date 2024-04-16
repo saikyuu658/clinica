@@ -6,6 +6,7 @@ import HomeViewVue from "./view/HomeView.vue";
 import UsuariosViewVue from "./view/cadastros/UsuariosView.vue";
 import DashboardViewVue from './view/DashboardView.vue'
 import SterilizeViewVue from "./view/equipamentos/SterilizeView.vue";
+import ManutencaoViewVue from "./view/equipamentos/ManutencaoView.vue";
 const routes = [
   {
     path: "/",
@@ -33,6 +34,10 @@ const routes = [
         path: "cme", 
         component: SterilizeViewVue
       },
+      {
+        path: "manutencao", 
+        component: ManutencaoViewVue
+      }
       
     ]
   },

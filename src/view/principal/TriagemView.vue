@@ -378,8 +378,6 @@
         </template>
     </ModalSmallComponentVue>
 
-
-
     <LoadingComponentVue v-show="isLoading"></LoadingComponentVue>
 
 </template>
@@ -767,13 +765,11 @@ export default {
     }
 
     .actions-confirm-dialog{
-        position: absolute;
-        bottom: 0;
+       
         display: flex;
         padding: 10px;
         width: 100%;
         gap: 10px;
-        left: 0;
         justify-content: center; 
     }
 

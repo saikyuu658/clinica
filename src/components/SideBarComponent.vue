@@ -28,6 +28,7 @@
                     </span>
                 </li>
             </router-link>
+        
             <li v-on:click="logout">
                 <span class="material-symbols-outlined">
                     logout
@@ -52,6 +53,7 @@
 </script>
 
 <style scoped>
+
     .logo{
         /* background-color: white; */
     }
@@ -114,10 +116,12 @@
         list-style: none !important;
         font-size: 15px;
         color: azure;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         height: 50px;
-        
-
     }
+
 
     nav ul li:hover{
         background-color: aliceblue;

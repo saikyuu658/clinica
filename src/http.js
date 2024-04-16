@@ -187,7 +187,24 @@ class RequestHttp {
             if(!getToken()) {
                 throw new Error('Sem token')
             }
-            const response = await axios.post(API_URL + 'sterilize/create/'+credential, sterilize, { headers: { Authorization: `Bearer ${token.token_acess}` }}).then((resp)=>{
+            credential.sterilize = sterilize;
+            const response = await axios.post(API_URL + 'sterilize/create', credential, { headers: { Authorization: `Bearer ${token.token_acess}` }}).then((resp)=>{
+                return resp.data
+            });
+            return response
+        } catch (error) {
+            error.hasError = true;
+            return error;
+        }
+    }
+
+    async returnSterilize(sterilize, credential){
+        try {
+            if(!getToken()) {
+                throw new Error('Sem token')
+            }
+            credential.sterilize = sterilize;
+            const response = await axios.post(API_URL + 'sterilize/returned', credential, { headers: { Authorization: `Bearer ${token.token_acess}` }}).then((resp)=>{
                 return resp.data
             });
             return response
@@ -228,6 +245,21 @@ class RequestHttp {
         }
     }
 
+
+    async listItensFromSterilize(data){
+        try {
+            if(!getToken()) {
+                throw new Error('Sem token')
+            }
+            const response = await axios.post(API_URL + 'sterilize/listItems/', data, { headers: { Authorization: `Bearer ${token.token_acess}` }}).then((resp)=>{
+                return resp.data
+            })
+            return response
+        } catch (error) {
+            error.hasError = true;
+            return error;
+        }
+    }
 
 
 

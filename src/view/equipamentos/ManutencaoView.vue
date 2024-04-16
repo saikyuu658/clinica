@@ -2,9 +2,9 @@
     <div>
         <div class="filter">
             <button class="btn btn-primary" v-on:click="showModalAdd">Adicionar</button>
-            <form  @submit.prevent="search">
-                <input type="text" class="form-control" v-model="searchInput" style="width: 200px;">
-            </form>
+            <FilterComponent
+                @searchValue="search"
+            ></FilterComponent>
         </div>
     </div>
     <section class="content-table"> 
@@ -27,7 +27,7 @@
             </tbody>
         </table>
     </section>
-    <ModalEditarComponent
+    <ModalComponent
         v-show="isModalAddVisible"
         @close= "closeModalAdd"
     >
@@ -62,14 +62,15 @@
                 <button class="btn btn-primary">Finalizar</button>
             </div>
         </template>
-    </ModalEditarComponent>
+    </ModalComponent>
 </template>
 <script>
-import ModalEditarComponent from "@/components/modalEditarComponent.vue";
-
+import ModalComponent from "../../components/ModalComponent.vue";
+import FilterComponent from "../../components/FilterComponent.vue"
 export default {
     components: {
-        ModalEditarComponent
+        ModalComponent,
+        FilterComponent
     },
     data(){
         return {
@@ -136,7 +137,23 @@ export default {
     },
     created(){
         this.search()
-    }
+    },
+    computed: {
+        listComputed(){
+            if(this.searchInput == ""){
+                return this.listSterilize;
+            }else{
+                return this.listSterilize
+                .filter((e)=> {
+                    if(
+                        e.codStudent.toString().toLowerCase().includes(this.searchInput.toLowerCase())
+                        ){
+                        return e;
+                    }
+                })
+            }
+        }
+    },
    
 }
 </script>

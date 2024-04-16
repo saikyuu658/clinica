@@ -35,22 +35,17 @@ export default {
         justify-content: center;
         align-items: center;
         background-color: #0000000a;
-        z-index: 10;
+        z-index: 11;
     }
 
     .bg-small-footer{
-        position: absolute;
-        bottom: 10px;
-        gap: 10px;
-        left: 0;
-        right: 10px;
+        margin-top: 25px;
         display: flex;
-        justify-content: end;
+        gap: 10px;
     }
     .confirm-dialog{
         position: relative;
-        width: 300px;
-        height: 200px;
+        width: 350px;
         background-color: white;
         box-shadow: 0 0 10px #00000090;
         z-index: 10;
