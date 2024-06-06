@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const API_URL = "http://localhost:3200/"
+const API_URL = "http://192.168.100.103:3200/"
 
 const token = {
     token_acess : ""
