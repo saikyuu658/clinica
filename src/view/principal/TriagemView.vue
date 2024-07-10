@@ -1,38 +1,42 @@
 <template>
     <div>
         <div class="filter">
-            <button class="button is-info is-small" v-on:click="showFiltesr">
-                <span class="material-symbols-outlined">
-                    filter_alt
-                </span>
-            </button>
+            <span class="title-filter">Procedimentos</span>
+           
+            <div class="right-filter">
+                <button class="button is-info is-small" v-on:click="showFiltesr">
+                    <span class="material-symbols-outlined">
+                        filter_alt
+                    </span>
+                </button>
 
-            <SideFilterComponent
-            @close="closeFilter"
-            v-show="isOverlayPanel"
-            >
+                <SideFilterComponent
+                @close="closeFilter"
+                v-show="isOverlayPanel"
+                >
 
-                <template v-slot:body>
-                    <div class="form-group">
-                        <label for="">Agrupar por: </label>
-                        <select class="is-small input is-fullwidth" v-model="filterGroup"  id="">
-                            <option value="procedure">Procedimento</option>
-                            <option value="patient">Paciente</option>
-                            <option value="clinic">Clínica</option>
-                        </select>
-                    </div>
-                </template>
+                    <template v-slot:body>
+                        <div class="form-group">
+                            <label for="">Agrupar por: </label>
+                            <select class="is-small input is-fullwidth" v-model="filterGroup"  id="">
+                                <option value="procedure">Procedimento</option>
+                                <option value="patient">Paciente</option>
+                                <option value="clinic">Clínica</option>
+                            </select>
+                        </div>
+                    </template>
 
-                <template v-slot:footer>
-                    <button class="button is-small is-fullwidth is-info" v-on:click="applyFilter">Aplicar Filtro</button>
-                </template>
-            </SideFilterComponent>
+                    <template v-slot:footer>
+                        <button class="button is-small is-fullwidth is-info" v-on:click="applyFilter">Aplicar Filtro</button>
+                    </template>
+                </SideFilterComponent>
 
-            <button class="button is-info is-small" v-on:click="showModal">Nova Triagem</button>
-            
-            <FilterComponent
-                @searchValue="search"
-            ></FilterComponent>
+                <button class="button is-info is-small" v-on:click="showModal">Nova Triagem</button>
+                
+                <FilterComponent
+                    @searchValue="search"
+                ></FilterComponent>
+            </div>
         </div>
     </div>
     <section class="content-table" v-if="tablesUsed == 'procedure'"> 
@@ -40,73 +44,90 @@
             :value="listComputed" 
             sortField="name"
             :sortOrder="1"
-            paginator :rows="11" 
+            scrollable 
+            scrollHeight="flex" 
+            tableStyle="min-width: 70rem"
             >
             <template #empty> Nenhum procedimento registrado. </template>
             <Column field="id" header="Nº"></Column>
-            <Column field="name" header="Procedimento"></Column>
-            <Column field="clinic" header="Clínica"></Column>
-            <Column field="dt_created" header="Dt. cadastro">
+            <Column field="procedimento" header="Procedimento"></Column>
+            <Column field="clinica" header="Clínica"></Column>
+            <Column field="created_at" header="Dt. cadastro">
                 <template #body="slotProps">
-                    {{ formatDate(slotProps.data.dt_created) }}
+                    {{ formatDate(slotProps.data.created_at) }}
                 </template>
             </Column>
-            <Column field="patient.name" header="Paciente"></Column>
-            <Column field="patient.phone" header="Telefone">
+            <Column field="nome" header="Paciente">
+                <template #body="slotProps">    
+                    <a v-on:click="()=>{
+                        isVisiblePaciente = true
+                        this.newPatient.cpf = slotProps.data.cpf
+                        findByCpf()
+                    }">{{  slotProps.data.nome }}</a>
+                </template>
+            </Column>
+            <Column field="telefone" header="Telefone">
                 <template #body="slotProps">
-                    {{ formatTel(slotProps.data.patient.phone) }}
+                    {{ formatTel(slotProps.data.telefone) }}
                 </template>
             </Column>
             <Column>
                 <template #body="slotProps">
+                    <div style="{display: flex;}">
                         <span 
-                        v-tooltip.bottom="'Marcar como Agendado'"
-                        v-on:click="showSmallModal(slotProps.data)"
-                        class="material-symbols-outlined">
+                            v-tooltip.bottom="'Marcar como Agendado'"
+                            v-on:click="showSmallModal(slotProps.data)"
+                            class="material-symbols-outlined">
                             event_upcoming
                         </span>
+                    </div>
                 </template>
             </Column>
 
         </DataTable>
     </section>
+
     <section class="content-table" v-if="tablesUsed == 'patient'">
         <DataTable 
             :sortOrder="1"
             expandableRowGroups 
             :value="listComputed" 
             rowGroupMode="subheader"
-            sortField="patient.name"
-            groupRowsBy="patient.name"
-            paginator :rows="11" 
+            sortField="nome"
+            groupRowsBy="nome"
+            scrollable 
+            scrollHeight="flex" 
+            tableStyle="min-width: 70rem"
             v-model:expandedRowGroups="expandedRowGroups"
             >
             <template #empty> Nenhum procedimento registrado. </template>
             <template #groupheader="slotProps">
-                <span class="vertical-align-middle ml-2 font-bold line-height-3">{{ slotProps.data.patient.name }}</span>
+                <span class="vertical-align-middle ml-2 font-bold line-height-3">{{ slotProps.data.nome }}</span>
             </template>
             <Column field="id" header="Nº"></Column>
-            <Column field="name" header="Procedimento"></Column>
-            <Column field="clinic" header="Clínica"></Column>
-            <Column field="dt_created" header="Dt. cadastro">
+            <Column field="procedimento" header="Procedimento"></Column>
+            <Column field="clinica" header="Clínica"></Column>
+            <Column field="created_at" header="Dt. cadastro">
                 <template #body="slotProps">
-                    {{ formatDate(slotProps.data.dt_created) }}
+                    {{ formatDate(slotProps.data.created_at) }}
                 </template>
             </Column>
-            <Column field="patient.name" header="Paciente"></Column>
-            <Column field="patient.phone" header="Telefone">
+            <Column field="nome" header="Paciente"></Column>
+            <Column field="telefone" header="Telefone">
                 <template #body="slotProps">
-                    {{ formatTel(slotProps.data.patient.phone) }}
+                    {{ formatTel(slotProps.data.telefone) }}
                 </template>
             </Column>
             <Column>
                 <template #body="slotProps">
+                    <div style="{display: flex;}">
                         <span 
                         v-tooltip.bottom="'Marcar como Agendado'"
                         v-on:click="showSmallModal(slotProps.data)"
                         class="material-symbols-outlined">
                             event_upcoming
                         </span>
+                    </div>
                 </template>
             </Column>
 
@@ -117,39 +138,43 @@
         <DataTable 
             expandableRowGroups 
             :value="listComputed" 
-            paginator :rows="11" 
             :sortOrder="1"
-            sortField="clinic"
+            sortField="clinica"
             rowGroupMode="subheader" 
-            groupRowsBy="clinic"
+            groupRowsBy="clinica"
+            scrollable 
+            scrollHeight="flex" 
+            tableStyle="min-width: 70rem"
             v-model:expandedRowGroups="expandedRowGroups"
             >
             <template #empty> Nenhum procedimento registrado. </template>
             <template #groupheader="slotProps">
-                <span class="vertical-align-middle ml-2 font-bold line-height-3">{{ slotProps.data.clinic }}</span>
+                <span class="vertical-align-middle ml-2 font-bold line-height-3">{{ slotProps.data.clinica }}</span>
             </template>
-            <Column field="clinic" header="Clínica"></Column>
+            <Column field="clinica" header="Clínica"></Column>
             <Column field="id" header="Nº"></Column>
-            <Column field="name" header="Procedimento"></Column>
-            <Column field="patient.name" header="Paciente"></Column>
-            <Column field="dt_created" header="Dt. cadastro">
+            <Column field="procedimento" header="Procedimento"></Column>
+            <Column field="nome" header="Paciente"></Column>
+            <Column field="created_at" header="Dt. cadastro">
                 <template #body="slotProps">
-                    {{ formatDate(slotProps.data.dt_created) }}
+                    {{ formatDate(slotProps.data.created_at) }}
                 </template>
             </Column>
-            <Column field="patient.phone" header="Telefone">
+            <Column field="patient.telefone" header="Telefone">
                 <template #body="slotProps">
-                    {{ formatTel(slotProps.data.patient.phone) }}
+                    {{ formatTel(slotProps.data.telefone) }}
                 </template>
             </Column>
             <Column>
                 <template #body="slotProps">
+                    <div style="{display: flex;}">
                         <span 
                         v-tooltip.bottom="'Marcar como Agendado'"
                         v-on:click="showSmallModal(slotProps.data)"
                         class="material-symbols-outlined">
                             event_upcoming
                         </span>
+                    </div>
                 </template>
             </Column>
 
@@ -157,8 +182,8 @@
     </section>
 
     <ModalLargeComponentVue
-    v-show="isModalVisible"
-    @close="closeModal"
+        v-show="isModalVisible"
+        @close="closeModal"
     >
         <template v-slot:header>
             <h3>Triagem</h3>
@@ -169,7 +194,7 @@
                     <form @submit.prevent="findByCpf">
                         <div class="row-group">
                             <div class="form-group">
-                                <label for="">CPF</label>
+                                <label for="">CPF *</label>
                                 <input type="tel" v-mask="'###.###.###-##'"  class="input is-small" v-model="newPatient.cpf" placeholder="000.000.000-00" >
                             </div>
 
@@ -184,12 +209,12 @@
                     </form>
                     <div class="row-group">
                         <div class="form-group">
-                            <label for="">Nome Completo</label>
-                            <input type="text" :disabled="disablefields" v-model="newPatient.name" class="input is-small" style="width: 300px;" >
+                            <label for="">Nome Completo *</label>
+                            <input type="text" :disabled="disablefields" v-model="newPatient.nome" class="input is-small" style="width: 300px;" >
                         </div>
                         <div class="form-group">
-                            <label for="">Telefone</label>
-                            <input type="tel" :disabled="disablefields" v-mask="'(##) # ####-####'" v-model="newPatient.phone" class="input is-small"  >
+                            <label for="">Telefone *</label>
+                            <input type="tel" :disabled="disablefields" v-mask="'(##) # ####-####'" v-model="newPatient.telefone" class="input is-small"  >
                         </div>
                     </div>
 
@@ -197,19 +222,19 @@
                         
                         <div class="form-group">
                             <label for="">Data Nasc.</label>
-                            <input type="date" :disabled="disablefields" v-model="newPatient.dt_birth" class="input is-small" >
+                            <input type="date" :disabled="disablefields" v-model="newPatient.dt_nasc" class="input is-small" >
                         </div>
 
                         <div class="form-group">
                             <label for="">Genero</label>
-                            <select class="input is-small" :disabled="disablefields" v-model="newPatient.gender" >
+                            <select class="input is-small" :disabled="disablefields" v-model="newPatient.genero" >
                                 <option value="m" >Masculino</option>
                                 <option value="f" >Femenino</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="">Estado Civil</label>
-                            <select class="input is-small" :disabled="disablefields" v-model="newPatient.civil_state"  >
+                            <select class="input is-small" :disabled="disablefields" v-model="newPatient.estado_civil"  >
                                 <option value="a" >Solteiro(a)</option>
                                 <option value="c" >Casado(a)</option>
                                 <option value="s" >Separado(a)</option>
@@ -221,35 +246,34 @@
                     
                     <div class="form-group">
                         <label for="">Nome do responsável (Se Houver)</label>
-                        <input type="text" :disabled="disablefields" v-model="newPatient.resp_name"  class="input is-small"  >
+                        <input type="text" :disabled="disablefields" v-model="newPatient.nome_responsavel"  class="input is-small"  >
                     </div>
 
                     
                     <div class="row-group">
                         <div class="form-group">
                             <label for="">Profissão</label>
-                            <input type="text" :disabled="disablefields" v-model="newPatient.profession"  class="input is-small"  >
+                            <input type="text" :disabled="disablefields" v-model="newPatient.profissao"  class="input is-small"  >
                         </div>
                         <div class="form-group">
                             <label for="">Local de trabalho</label>
-                            <input type="text" :disabled="disablefields" class="input is-small" v-model="newPatient.locale_work">
+                            <input type="text" :disabled="disablefields" class="input is-small" v-model="newPatient.local_trabalho">
                         </div>
                     </div>
                     
                     <div class="row-group">
                         <div class="form-group">
                             <label for="">Endereço</label>
-                            <input type="text" style="width: 300px;" :disabled="disablefields" class="input is-small" v-model="newPatient.address" >
+                            <input type="text" style="width: 300px;" :disabled="disablefields" class="input is-small" v-model="newPatient.endereco" >
                         </div>
                         <div class="form-group">
                             <label for="">Bairro</label>
-                            <input type="text" v-model="newPatient.district" :disabled="disablefields"  class="input is-small"  >
+                            <input type="text" v-model="newPatient.bairro" :disabled="disablefields"  class="input is-small"  >
                         </div>
                         <div class="form-group">
                             <label for="">Cidade</label>
-                            <input type="text"  class="input is-small" :disabled="disablefields"  v-model="newPatient.city">
+                            <input type="text"  class="input is-small" :disabled="disablefields"  v-model="newPatient.cidade">
                         </div>
-                        
                     </div>
                 </TabPanel>
 
@@ -257,45 +281,45 @@
                     <form @submit.prevent="addProcedure">
                         <div class="row-group">
                             <div class="form-group "  >
-                                <label for="">Procedimento</label>
-                                <select class="input is-small" :disabled="disablefields" style="width:450px;" v-model="inputsProcedure.name">
-                                    <option :value="item.name" v-for="(item, index) of listOptionsProcedures" :key="index">
-                                        {{ item.name }}
+                                <label for="">Procedimento *</label>
+                                <select class="input is-small" :disabled="disablefields" style="width:450px;" v-model="inputsProcedure.nome">
+                                    <option :value="item" v-for="(item, index) of listOptionsProcedures" :key="index">
+                                        {{ item }}
                                     </option>
                                 </select>
                             </div>
 
                             <div class="form-group">
-                                <label for="">Clínica</label>
-                                <select class="input is-small" :disabled="disablefields" style="width:450px;" v-model="inputsProcedure.clinic">
-                                    <option :value="item.name" v-for="(item, index) of listOptionsClinics" :key="index">
-                                        {{ item.name }}
+                                <label for="">Clínica *</label>
+                                <select class="input is-small" :disabled="disablefields" style="width:450px;" v-model="inputsProcedure.clinica">
+                                    <option :value="item" v-for="(item, index) of listOptionsClinics" :key="index">
+                                        {{ item }}
                                     </option>
                                 </select>
                             </div>
                         </div>
                         <div class="row-group">
                             <div class="form-group">
-                                <label for="">Elementos Dentários</label>
-                                <select class="input is-small" :disabled="disablefields" v-model="inputsProcedure.element_dental">
-                                    <option :value="item.name" v-for="(item, index) of listOptionsElemetsDentr" :key="index">
-                                        {{ item.name }}
+                                <label for="">Elementos Dentários *</label>
+                                <select class="input is-small" :disabled="disablefields" v-model="inputsProcedure.elemento_dental">
+                                    <option :value="item" v-for="(item, index) of listOptionsElemetsDentr" :key="index">
+                                        {{ item }}
                                     </option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="">Regiões dos Elementos Dentários</label>
-                                <select class="input is-small" :disabled="disablefields" style="width:295px;" v-model="inputsProcedure.region_dental">
-                                    <option :value="item.name" v-for="(item, index) of listOptionsRegions" :key="index">
-                                        {{ item.name }}
+                                <select class="input is-small" :disabled="disablefields" style="width:295px;" v-model="inputsProcedure.regiao_dental">
+                                    <option :value="item" v-for="(item, index) of listOptionsRegions" :key="index">
+                                        {{ item }}
                                     </option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="">Regiões da Cavidade Bucal</label>
-                                <select class="input is-small" :disabled="disablefields" style="width:295px;" v-model="inputsProcedure.buccal_cavity">
-                                    <option :value="item.name" v-for="(item, index) of listOptionsCavBucal" :key="index">
-                                        {{ item.name }}
+                                <select class="input is-small" :disabled="disablefields" style="width:295px;" v-model="inputsProcedure.cavidade_bucal">
+                                    <option :value="item" v-for="(item, index) of listOptionsCavBucal" :key="index">
+                                        {{ item }}
                                     </option>
                                 </select>
                             </div>
@@ -337,15 +361,15 @@
                             </thead>
                             <tbody>
                                 <tr v-for="(item, index) in newListProcedures" :key="index">
-                                    <td>{{ item.name }}</td>
-                                    <td>{{ `${item.element_dental} ${item.region_dental? '-'  + item.region_dental : ''  } ${item.buccal_cavity? '-'  + item.buccal_cavity : ''}` }}</td>
-                                    <td>{{ item.clinic }}</td>
+                                    <td>{{ item.nome }}</td>
+                                    <td>{{ `${item.elemento_dental}  ${item.regiao_dental!=""? '-'  + item.regiao_dental : ''  } ${item.cavidade_bucal!=""? '-'  + item.cavidade_bucal : ''}` }}</td>
+                                    <td>{{ item.clinica }}</td>
                                     <td>
-                                        <button class="button is-danger" style="padding: 0px; width: 40px" v-on:click="removeProcedure(index)">
-                                            <span class="material-symbols-outlined" >
+                                        <div style="{display: flex;}">
+                                            <span class="material-symbols-outlined" v-on:click="removeProcedure(index)">
                                                 delete
                                             </span>
-                                        </button>
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
@@ -378,376 +402,517 @@
         </template>
     </ModalSmallComponentVue>
 
+    <ModalComponente
+        v-show="isVisiblePaciente"
+        @close="()=>{
+            clearInputs()
+            isVisiblePaciente = false;
+        }"
+    >
+        <template v-slot:header>
+            <h3>{{ newPatient.nome }}</h3>
+        </template>
+        <template v-slot:body>
+            <div class="row-group" style="gap: 25px;">
+                <div class="form-group">
+                    <label for=""><b>CPF</b></label>
+                    <div>{{ newPatient.cpf }}</div>
+                </div>
+            </div>
+            <div class="row-group" style="gap: 25px;">
+               
+                <div class="form-group">
+                    <label for=""><b>Telefone</b></label>
+                    <div>{{ newPatient.telefone }}</div>
+                </div>
+
+                <div class="form-group">
+                    <label for=""><b>Data Nasc.</b></label>
+                    <div>{{ new Date(newPatient.dt_nasc).toLocaleDateString() }}</div>
+                </div>
+              
+            </div>
+            <div class="row-group" style="gap: 25px;">
+                <div class="form-group">
+                    <label for=""><b>Estado Civil</b></label>
+                    <select class="input is-small" disabled v-model="newPatient.estado_civil"  >
+                        <option value="a" >Solteiro(a)</option>
+                        <option value="c" >Casado(a)</option>
+                        <option value="s" >Separado(a)</option>
+                        <option value="d" >Divorciado(a)</option>
+                        <option value="v" >Viúvo(a)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for=""><b>Genero</b></label>
+                    <select class="input is-small" disabled v-model="newPatient.genero" >
+                        <option value="m" >Masculino</option>
+                        <option value="f" >Femenino</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row-group" style="gap: 25px;">
+                
+                <div class="form-group">
+                    <label for=""><b>Profissão</b></label>
+                    <div>{{ newPatient.profissao }}</div>
+                </div>
+                <div class="form-group">
+                    <label for=""><b>Local de trabalho</b></label>
+                    <div>{{ newPatient.local_trabalho == ''?'Não declarado' : newPatient.local_trabalho }}</div>
+                </div>
+                
+            </div>
+            
+            <div class="form-group">
+                <label for=""><b>Nome do responsável (Se Houver)</b></label>
+                <div>{{ newPatient.nome_responsavel }}</div>
+            </div>
+
+            <div class="form-group">
+                <label for=""><b>Endereço</b></label>
+                <div>{{ newPatient.endereco }}</div>
+            </div>
+            <div class="row-group" style="gap: 25px;">
+                <div class="form-group">
+                    <label for=""><b>Bairro</b></label>
+                    <div>{{ newPatient.bairro }}</div>
+                </div>
+                <div class="form-group">
+                    <label for=""><b>Cidade</b></label>
+                    <div>{{ newPatient.cidade }}</div>
+                </div>
+            </div>
+
+        </template>
+    </ModalComponente>
+
     <LoadingComponentVue v-show="isLoading"></LoadingComponentVue>
 
 </template>
 <script>
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import ModalLargeComponentVue from '@/components/ModalLargeComponent.vue'
-import FilterComponent from '@/components/FilterComponent.vue';
-import TabView from 'primevue/tabview';
-import TabPanel from 'primevue/tabpanel';
-import SideFilterComponent from "@/components/SideFilterComponent.vue"
-import RequestHttp from '@/http';
-import {mask} from 'vue-the-mask'
-import ModalSmallComponentVue from '@/components/ModalSmallComponent.vue'
-import LoadingComponentVue from '@/components/LoadingComponent.vue'
+    import DataTable from 'primevue/datatable';
+    import Column from 'primevue/column';
+    import ModalLargeComponentVue from '@/components/ModalLargeComponent.vue'
+    import FilterComponent from '@/components/FilterComponent.vue';
+    import TabView from 'primevue/tabview';
+    import TabPanel from 'primevue/tabpanel';
+    import SideFilterComponent from "@/components/SideFilterComponent.vue"
+    import {http} from '@/http';
+    import {mask} from 'vue-the-mask'
+    import ModalSmallComponentVue from '@/components/ModalSmallComponent.vue'
+    import LoadingComponentVue from '@/components/LoadingComponent.vue'
+    import ModalComponente from '@/components/ModalComponent.vue'
 
+    export default {
+        components: {
+            ModalComponente,
+            FilterComponent,
+            ModalLargeComponentVue,
+            ModalSmallComponentVue,
+            TabPanel, 
+            TabView,
+            DataTable,
+            Column,
+            SideFilterComponent,
+            LoadingComponentVue
+        },
+        directives: {mask},
+        data(){
+            return {
+                isModalSmallConfirmSendEmptyProcedures: false,
+                controlTabView : 0,
+                isLoading: false,
+                isOverlayPanel: false,
+                isModalVisible: false,
+                isModalSmall: false,
+                searchInput: "",
+                listTableProcedures: [],
+                expandedRowGroups: null,
+                
+                newPatient: {
+                    cpf: "",
+                    nome: "",
+                    telefone: "",
+                    dt_nasc: "",
+                    genero: "m",
+                    estado_civil: "s",
+                    nome_responsavel: "",
+                    profissao: "",
+                    local_trabalho: "",
+                    endereco: "",
+                    bairro: "",
+                    cidade: ""
+                },
 
-export default {
-    components: {
-        FilterComponent,
-        ModalLargeComponentVue,
-        ModalSmallComponentVue,
-        TabPanel, 
-        TabView,
-        DataTable,
-        Column,
-        SideFilterComponent,
-        LoadingComponentVue
-    },
-    directives: {mask},
-    data(){
-        return {
-            isModalSmallConfirmSendEmptyProcedures: false,
-            controlTabView : 0,
-            isLoading: false,
-            isOverlayPanel: false,
-            isModalVisible: false,
-            isModalSmall: false,
-            searchInput: "",
-            listTableProcedures: [],
-            expandedRowGroups: null,
-            newPatient: {
-                cpf: "",
-                name: "",
-                phone: "",
-                dt_birth: "",
-                gender: "m",
-                civil_state: "s",
-                resp_name: "",
-                profession: "",
-                locale_work: "",
-                address: "",
-                district: "",
-                city: ""
+                tempValuesProcedureUpdated: null,
+                filterGroup: "procedure",
+                newListProcedures: [],
+                
+                inputsProcedure: {
+                    nome: "",
+                    elemento_dental: "",               
+                    regiao_dental: "",
+                    cavidade_bucal: "",
+                    clinica : ''
+                },
+
+                filters: null,
+
+                listOptionsClinics: [
+                " CLÍNICA DE CIRURGIA I",
+                    "CLÍNICA DE CIRURGIA II",
+                    "CLÍNICA DE CIRURGIA III",
+                    "CLÍNICA ODONTOLÓGICA I (PERIODONTIA)",
+                    "CLÍNICA ODONTOLÓGICA I (DENTÍSTICA)",
+                    "CLÍNICA ODONTOLÓGICA II (ENDODONTIA)",
+                    "CLÍNICA ODONTOLÓGICA II (PERIODONTIA)",
+                    "CLÍNICA ODONTOLÓGICA II (DENTÍSTICA)",
+                    "CLÍNICA ODONTOLÓGICA III (ENDODONTIA)",
+                    "CLÍNICA ODONTOLÓGICA III (PERIODONTIA)",
+                    "CLÍNICA ODONTOLÓGICA III (DENTÍSTICA)",
+                    "CLÍNICA DE PRÓTESE I",
+                    "CLÍNICA DE PRÓTESE II",
+                    "ESTOMATOLOGIA",
+                    "CLÍNICA INFANTIL I",
+                    "CLÍNICA INFANTIL II",
+                    "CLÍNICA DE ATENÇÃO AO IDOSO E PESSOAS COM DEFICIÊNCIA",
+                    "ESTÁGIO CURRICULAR SUPERVISIONADO CLÍNICA INTEGRADA I E II (PERIODONTIA)",
+                    "ESTÁGIO CURRICULAR SUPERVISIONADO CLÍNICA INTEGRADA I E II (ENDODONTIA)",
+                    "ESTÁGIO CURRICULAR SUPERVISIONADO CLÍNICA INTEGRADA I E II (DENTÍSTICA)",
+                    "ESTÁGIO CURRICULAR SUPERVISIONADO CLÍNICA INTEGRADA I E II (PRÓTESE)",
+                    "ESTÁGIO CURRICULAR SUPERVISIONADO CLÍNICA INTEGRADA I E II (CIRURGIA)"
+                ],
+                
+                listOptionsProcedures : [
+                    "Exodontia de raízes residuais sem retalho",
+                    "Exodontia de raízes residuais com retalho",
+                    "Exodontia de dente incluso",
+                    "Exodontia de dente semi-incluso",
+                    "Restauração Classe I",
+                    "Restauração Classe II",
+                    "Restauração Classe III",
+                    "Restauração Classe VI",
+                    "Restauração Classe V",
+                    "PSR",
+                    "Índice De Placa",
+                    "Sangramento À Sondagem",
+                    "Raspagem Supragengival",
+                    "Raspagem Subgengival",
+                    "Selante",
+                    "Aplicação tópica de flúor",
+                    "Profilaxia",
+                    "Instrução de higiene oral",
+                    "Adequação do meio",
+                    "Prótese total superior",
+                    "Prótese total inferior",
+                    "Prótese parcial removível superior",
+                    "Prótese parcial removível inferior",
+                    "Prótese fixa (2 oumais elementos)",
+                    "Coroa total unitária com pino intrarradicular",
+                    "Coroa total unitária sem pino intrarradicular",
+                    "Periograma",
+                    "Tratamento endodôntico dente unirradicular ( incisivos)",
+                    "Tratamento endodôntico dente unirradicular ( caninos)",
+                    "Tratamento endodôntico pré-molares",
+                    "Tratamento endodôntico molares",
+                    "Retratamento endodôntico",
+                    "Biópsia incisional",
+                    "Biópsia excisional",
+                    "Punção aspirativa",
+                    "Marsupialização",
+                    "Descompressão",
+                    "Frenectomia",
+                    "Exodontia técnica I",
+                    "Exodontia técnica II",
+                    'Exodontia técnica III',
+                    "Tracionamento ortodôntico",
+                    "Cirurgia pré-protética",
+                    "Aumento de Coroa Clínica",
+                    "Enxerto gengival",
+                    "Gengivoplastia",
+                ],
+                
+                listOptionsElemetsDentr : [
+                    "11",
+                    "12",
+                    "13",
+                    "14",
+                    "15",
+                    "16",
+                    "17",
+                    "18",
+                    "21",
+                    "22",
+                    "23",
+                    "24",
+                    "25",
+                    "26",
+                    "27",
+                    "28",
+                    "31",
+                    "32",
+                    "33",
+                    "34",
+                    "35",
+                    "36",
+                    "37",
+                    "38",
+                    "41",
+                    "42",
+                    "43",
+                    "44",
+                    "45",
+                    "46",
+                    "47",
+                    "48",
+                    "Extranumerario",
+                    "Desdentado"
+                ],
+                
+                listOptionsRegions : [
+                    "II sextante",
+                    "III sextante",
+                    "IV sextante",
+                    "V sextante",
+                    "VI sextante",
+                    "Arco superior",
+                    "Arco inferior",
+                ],
+
+                listOptionsCavBucal : [
+                    "Bochecha",
+                    "Mucosa jugal",
+                    "Palato mole",
+                    "Palato duro",
+                    "Gengiva inserida",
+                    "Gengiva marginal",
+                    "Mucosa alveolar"
+                ],
+
+                isVisiblePaciente : false,
+                
+
+                tablesUsed: 'procedure',
+
+                disablefields: true
+            }
+        },
+        methods: {
+
+            closeSmallModal(){
+                this.tempValuesProcedureUpdated = null;
+                this.isModalSmall = false;
+            },
+            
+            showSmallModal(val){
+                this.isModalSmall = true;
+                this.tempValuesProcedureUpdated = val;
             },
 
-            tempValuesProcedureUpdated: null,
-            filterGroup: "procedure",
-            newListProcedures: [],
-            
-            inputsProcedure: {
-                name: "",
-                element_dental: "",               
-                region_dental: "",
-                buccal_cavity: "",
-                clinic : ''
-
+            closeModal(){
+                this.isModalVisible = false;
+                this.clearInputs()
             },
 
-            filters: null,
-
-            listOptionsClinics: [],
-
-            listOptionsProcedures : [],
-
-            listOptionsElemetsDentr : [],
-            
-            listOptionsRegions : [],
-
-            listOptionsCavBucal : [],
-
-            tablesUsed: 'procedure',
-
-            disablefields: true
-        }
-    },
-    methods: {
-
-        closeSmallModal(){
-            this.tempValuesProcedureUpdated = null;
-            this.isModalSmall = false;
-        },
-        
-        showSmallModal(val){
-            this.isModalSmall = true;
-            this.tempValuesProcedureUpdated = val;
-        },
-
-        applyFilter(){
-            this.tablesUsed = this.filterGroup;
-            this.isOverlayPanel = false;
-        },
-
-        closeFilter(){
-            this.isOverlayPanel = false
-        },
-        
-        showFiltesr(){
-            this.isOverlayPanel = true    
-        },
-        
-        closeModal(){
-            this.isModalVisible = false;
-            this.clearInputs()
-        },
-
-        async showModal(){
-            this.isLoading = true
-            const resp =await RequestHttp.listsCadTriagem();
-            if(resp.hasError){
-                this.isLoading = false
-                this.$toast.add({ severity: 'error', summary: 'Erro', detail: resp.response.data.message, life: 3000 })
-            }else{
-                this.isLoading = false
+            async showModal(){
                 this.disablefields = true;
                 this.isModalVisible = true;
-                this.listOptionsClinics = resp.filter(e=> e.type == 'c')
-                this.listOptionsProcedures = resp.filter(e=> e.type == 'p')
-                this.listOptionsElemetsDentr = resp.filter(e=> e.type == 'd')
-                this.listOptionsRegions = resp.filter(e=> e.type == 'r');
-                this.listOptionsCavBucal = resp.filter(e=> e.type == 'b');
+            },
+            
+            closeFilter(){
+                this.isOverlayPanel = false
+            },
+            
+            showFiltesr(){
+                this.isOverlayPanel = true    
+            },
 
-            }
+            applyFilter(){
+                this.tablesUsed = this.filterGroup;
+                this.isOverlayPanel = false;
+            },
+
+            search(value){
+                this.searchInput = value;
+            },
+
+            formatDate(val){
+                const data = new Date(val);
+                return data.toLocaleDateString()
+            },
+
+            clearInputs(){
+                this.newPatient = {
+                    cpf: "",
+                    nome: "",
+                    telefone: "",
+                    dt_nasc: "",
+                    genero: "m",
+                    estado_civil: "s",
+                    nome_responsavel: "",
+                    profissao: "",
+                    local_trabalho: "",
+                    endereco: "",
+                    bairro: "",
+                    cidade: ""
+                };
+                this.inputsProcedure =  {
+                    nome: "",
+                    elemento_dental: "",               
+                    regiao_dental: "",
+                    cavidade_bucal: "",
+                    clinica : ''
+                };
+                this.controlTabView = 0;
+                this.newListProcedures = [];
+            },
+
+            addProcedure(){
+                if(this.inputsProcedure.nome == '' || this.inputsProcedure.clinica == '' || this.inputsProcedure.elemento_dental){
+                    this.$toast.add({ severity: 'warn', summary: 'Alerta', detail: 'Selecione os itens obrigatórios', life: 3000 }) 
+                    return 
+                }
+                this.newListProcedures.push(this.inputsProcedure)
+                this.inputsProcedure = {
+                    nome: "",
+                    elemento_dental: "",               
+                    regiao_dental: "",
+                    cavidade_bucal: "",
+                    clinica : ''
+                }
+            },
+
+            removeProcedure(index){
+            this.newListProcedures.splice(index, 1)
+            },
+
+            formatTel(val) {
+                return `(${val.substring(0, 2)}) ${val.substring(2, 7)} - ${val.substring(7)}`
+            },
+            
+            async save(){
+                try {
+
+                    const regex = /\.|-|\(|\)/gi;
+                    this.newPatient.cpf = this.newPatient.cpf.replaceAll(regex, '').replaceAll(' ', '');
+                    this.newPatient.telefone = this.newPatient.telefone.replaceAll(regex, '').replaceAll(' ', '');
+                    if(this.newListProcedures.cpf == '' || this.newPatient.telefone == '' || this.newPatient.nome == ''){
+                        this.$toast.add({ severity: 'warn', summary: 'Alerta', detail: 'Preencha os campos obrigatórios', life: 3000 }) 
+                    }
+                    if(this.newListProcedures.length == 0 ){
+                        this.$toast.add({ severity: 'warn', summary: 'Alerta', detail: "Nenhum procedimento registrado", life: 3000 })
+                        return
+                    }
+                    if(this.newPatient.cpf.length < 11) {
+                        this.$toast.add({ severity: 'warn', summary: 'Alerta', detail: 'CPF inválido', life: 3000 }) 
+                        return
+                    }
+                    if(this.newPatient.telefone.length < 11) {
+                        this.$toast.add({ severity: 'warn', summary: 'Alerta', detail: 'Telefone inválido', life: 3000 }) 
+                        return
+                    }
+                    this.isLoading = true;
+
+                    let temp = this.newPatient;
+                    Object.keys(temp).forEach((k) =>{
+                        if(typeof(temp[k]) == 'string') temp[k].trim();
+                    });
+                    temp.procedimentos = this.newListProcedures;
+
+                    await http.post('triagem/save', temp)
+                    this.isLoading = false;
+                    this.$toast.add({ severity: 'success', summary: 'Sucesso', detail: "Cadastrado com sucesso", life: 3000 });
+                    this.listProcedure();
+                    this.clearInputs();
+                    this.isModalVisible = false
+
+                } catch (error) {
+                    this.isLoading = false;
+                    this.$toast.add({ severity: 'error', summary: 'Erro', detail: error.response.data, life: 3000 })
+                    
+                }
+
+            },
+
+            async findByCpf(){
+
+                try {
+                    this.isLoading = true;
+                    const cpf = this.newPatient.cpf.replaceAll(/\.|-|/gi, '');
+                    const resp = (await http.get('triagem/'+ cpf)).data;
+                    if(resp.length == 0){
+                        this.clearInputs();
+                        this.newPatient.cpf = cpf;
+                        this.$toast.add({ severity: 'info', summary:'Informativo', detail: "Nenhum usuário encontrado", life: 3000 });
+                    }else{
+                        const { procedimentos, ... paciente } = resp
+                        this.newPatient = paciente;
+                        this.newPatient.dt_nasc = new Date(paciente.dt_nasc).toISOString().slice(0, 10)
+                        this.newListProcedures = procedimentos;
+                    }
+                    this.disablefields = false;
+                    this.isLoading = false;
+                } catch (error) {
+                    this.isLoading = false;
+                    this.$toast.add({ severity: 'error', summary: 'Erro', detail: error.response.data.message, life: 3000 })
+                    
+                }
+            },
+
+            async updateProcedure(val){
+                try {
+                    this.isLoading = true;
+                    await http.post('triagem/agendar', val)
+                    this.isLoading = false;
+                    this.$toast.add({ severity: 'success', summary: 'Sucesso', detail: "Cadastrado com sucesso", life: 3000 });
+                    this.isModalSmall = false
+                    this.listProcedure();
+                    this.clearInputs();
+                } catch (error) {
+                    this.isLoading = false;
+                    this.$toast.add({ severity: 'error', summary: 'Erro', detail: error.response.data, life: 3000 })
+                }
+            },
+
+            async listProcedure(){
+                try {
+                    this.isLoading = true;
+                    const resp = await http.get('triagem/');
+                    this.listTableProcedures = resp.data
+                    this.isLoading = false;
+                } catch (error) {
+                    this.isLoading = false;
+                    this.$toast.add({ severity: 'error', summary: 'Erro', detail: error.response.data.message, life: 3000 })
+                }
+            },
+        },
+
+        mounted(){
+            this.listProcedure()
         },
         
-        search(value){
-            this.searchInput = value;
-        },
-
-        async listProcedure(){
-            this.isLoading = true;
-            const resp =await RequestHttp.listProcedures();
-
-            if(resp.hasError){
-                this.isLoading = false;
-                this.$toast.add({ severity: 'error', summary: 'Erro', detail: resp.response.data.message, life: 3000 })
-                this.isModalVisible = false;
-                
-            }else{
-                this.listTableProcedures = resp
-                 this.isLoading = false;
-            }
-        },
-
-        formatDate(val){
-            const data = new Date(val);
-            return data.toLocaleDateString()
-        },
-
-
-        async save(){
-            const regex = /\.|-|\(|\)/gi
-            this.newPatient.cpf = this.newPatient.cpf.replaceAll(regex, '').replaceAll(' ', '');
-            this.newPatient.phone = this.newPatient.phone.replaceAll(regex, '').replaceAll(' ', '');
-            
-            if(this.newListProcedures.length == 0 ){
-                this.$toast.add({ severity: 'warn', summary: 'Alerta', detail: "Nenhum procedimento registrado", life: 3000 })
-                return
-            }
-            if(this.newPatient.cpf.length < 11) {
-                this.$toast.add({ severity: 'warn', summary: 'Alerta', detail: 'CPF inválido', life: 3000 }) 
-                return
-            }
-            if(this.newPatient.phone.length < 11) {
-                this.$toast.add({ severity: 'warn', summary: 'Alerta', detail: 'Telefone inválido', life: 3000 }) 
-                return
-            }
-            this.isLoading = true;
-            let temp = this.newPatient;
-            console.log(temp)
-            Object.keys(temp).forEach((k) =>{
-                if(typeof(temp[k]) == 'string') temp[k].trim();
-            } );
-
-            temp.procedures = this.newListProcedures;
-            const resp = await RequestHttp.createPatient(temp)
-            if(resp.hasError){
-                this.isLoading = false;
-                this.$toast.add({ severity: 'error', summary: 'Erro', detail: resp.response.data.message, life: 3000 })
-                this.isModalVisible = false;
-                if(resp.response.status == 401){
-                    await new Promise(()=>{
-                        setTimeout(() => {
-                            this.$router.replace('/');
-                            localStorage.clear();
-                        }, 2000);
-                    })
-                } 
-                this.isModalVisible = false;
-            }else{
-                this.isLoading = false;
-                this.$toast.add({ severity: 'success', summary: 'Sucesso', detail: "Cadastrado com sucesso", life: 3000 });
-                this.listProcedure();
-                this.clearInputs();
-                this.isModalVisible = false
-                
-            }
-
-
-        },
-
-        clearInputs(){
-            this.newPatient = {
-                cpf: "",
-                name: "",
-                phone: "",
-                dt_birth: "",
-                gender: "m",
-                civil_state: "s",
-                resp_name: "",
-                profession: "",
-                locale_work: "",
-                address: "",
-                district: "",
-                city: ""
-            };
-            this.inputsProcedure =  {
-                name: '',
-                locale: "",
-                clinic: ""
-            };
-            this.controlTabView = 0;
-            this.newListProcedures = [];
-        },
-
-        async findByCpf(){
-
-            const regex = /\.|-|/gi
-            this.newPatient.cpf = this.newPatient.cpf.replaceAll(regex, '');
-            if(this.newPatient.cpf.length < 11) {
-                this.$toast.add({ severity: 'warn', summary: 'Alerta', detail: 'CPF inválido', life: 3000 }) 
-                return
-            }
-            this.isLoading = true;
-            const resp = await RequestHttp.findByCpf(this.newPatient.cpf)
-
-            if(resp.hasError){
-                this.isLoading = false;
-                this.$toast.add({ severity: 'error', summary: 'Erro', detail: resp.response.data.message, life: 3000 })
-                this.isModalVisible = false;
-                if(resp.response.status == 401){
-                    await new Promise(()=>{
-                        setTimeout(() => {
-                            this.$router.replace('/');
-                            localStorage.clear();
-                        }, 2000);
-                    })
-                } 
-                this.isModalVisible = false;
-            }else{
-                this.isLoading = false;
-                this.disablefields = false;
-
-                if(resp.length == 0){
-                    let temp = this.newPatient.cpf;
-                    this.clearInputs();
-                    this.newPatient.cpf = temp;
-                    this.$toast.add({ severity: 'info', summary:'Informativo', detail: "Nenhum Usuário encontrado", life: 3000 });
+        computed: {
+            listComputed(){
+                if(this.searchInput == ""){
+                    return this.listTableProcedures;
                 }else{
-                    this.$toast.add({ severity: 'success', summary: 'Sucesso', detail: "Usuário encontrado", life: 3000 });
-                    const { procedures, ... patients } = resp
-                    this.newPatient = patients;
-                    this.newPatient.dt_birth = new Date(patients.dt_birth).toISOString().slice(0, 10)
-                    this.newListProcedures = procedures.filter(e=> e.status != 'a');
+                    return this.listTableProcedures.filter((e)=> {
+                        if(
+                            e.procedimento.toLowerCase().includes(this.searchInput.toLowerCase()) || 
+                            e.nome.toLowerCase().includes(this.searchInput.toLowerCase()) ||
+                            e.cpf.toLowerCase().includes(this.searchInput.toLowerCase()) ||
+                            e.clinica.toLowerCase().includes(this.searchInput.toLowerCase()) 
+                            ){
+                            return e;
+                        }
+                    })
                 }
             }
         },
-
-        async updateProcedure(val){
-            let temp = {
-                name: val.name,
-                id: val.id,
-                locale: val.id,
-                dt_created : val.dt_created,
-                clinic : val.clinic,
-                status : 'a'
-            }
-            this.isLoading = true;
-
-            const resp =await RequestHttp.updateProcedure(temp)
-            if(resp.hasError){
-                this.isLoading = false;
-                this.$toast.add({ severity: 'error', summary: 'Erro', detail: resp.response.data.message, life: 3000 })
-                this.closeSmallModal()
-
-            }else{
-                this.isLoading = false;
-                this.closeSmallModal()
-                this.$toast.add({ severity: 'success', summary: 'Sucesso', detail: "Atualizado com sucesso", life: 3000 })
-                this.listProcedure()
-            }
-        },
-
-        searchClinic(event) {
-            setTimeout(() => {
-                if (!event.query.trim().length) {
-                    this.filters = [...this.clinics];
-                } else {
-                    this.filters = this.clinics.filter((country) => {
-                        return country.toLowerCase().startsWith(event.query.toLowerCase());
-                    });
-                }
-            }, 250);
-        },
-
-        searchProcedure(event) {
-            setTimeout(() => {
-                if (!event.query.trim().length) {
-                    this.filters = [...this.clinics];
-                } else {
-                    this.filters = this.procedures.filter((country) => {
-                        return country.toLowerCase().startsWith(event.query.toLowerCase());
-                    });
-                }
-            }, 250);
-        },
-
-        addProcedure(){
-            this.newListProcedures.push(this.inputsProcedure)
-            this.inputsProcedure = {
-                name : '',
-                clinic : '',
-                buccal_cavity: '',
-                element_dental: '',
-            }
-        },
-
-        removeProcedure(index){
-           this.newListProcedures.splice(index, 1)
-        },
-
-        formatTel(val) {
-            return `(${val.substring(0, 2)}) ${val.substring(2, 7)} - ${val.substring(7)}`
-        }
-    },
-
-    mounted(){
-        this.listProcedure()
-    },
     
-    computed: {
-        listComputed(){
-            if(this.searchInput == ""){
-                return this.listTableProcedures;
-            }else{
-                return this.listTableProcedures.filter((e)=> {
-                    if(
-                        e.name.toLowerCase().includes(this.searchInput.toLowerCase()) || 
-                        e.patient.name.toLowerCase().includes(this.searchInput.toLowerCase()) ||
-                        e.patient.cpf.toLowerCase().includes(this.searchInput.toLowerCase()) ||
-                        e.clinic.toLowerCase().includes(this.searchInput.toLowerCase()) 
-                        ){
-                        return e;
-                    }
-                })
-            }
-        }
-    },
-   
-}
+    }
 </script>
 <style scoped>
 
@@ -777,37 +942,6 @@ export default {
         font-size: 18px
     }
     
-    .filter{
-        position: absolute;
-        top: 5px;
-        height: 50px;
-        right: 10px;
-        gap: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: end;
-    }
-    .table-content{
-        min-height: 270px;
-        max-height: 270px;
-        overflow: auto;
-        border: solid 1px #00000020;
-    }
-
-    .content-table{
-        border: solid 1px #00000035;
-        background-color: white;
-        font-size: 13px;
-        position: absolute;
-        top: 60px;
-        left: 5px;
-        right: 5px;
-        bottom: 5px;
-        box-shadow: 0 0 10px #00000020;
-        border-radius: 3px;
-        margin: 5px;
-        padding: 15px;
-        overflow: auto;
-    }
+    
    
 </style>

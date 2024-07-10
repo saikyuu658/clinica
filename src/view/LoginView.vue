@@ -1,6 +1,6 @@
 <script>
-    import RequestHttp from '@/http'
     import Toast from 'primevue/toast';
+    import axios from 'axios';
     export default{
         components: {
             Toast,
@@ -13,19 +13,27 @@
                     password: ''
                 }, 
                 isLoading : false
-
             }
         }, 
         methods : {
             async login(){
-                this.isLoading = true;
-                const item = await RequestHttp.login(this.credential)
-                this.isLoading = false;
-                if(item.token_acess){
-                    localStorage.setItem('token', item.token_acess)
+                try {
+                    this.isLoading = true;
+                    const temp = {
+                        login : this.credential.login,
+                        senha : this.credential.password
+                    }
+                    const item = await axios.post('http://192.168.103.0:3200/user/login', temp)
+
+
+                    this.isLoading = false;
+                    localStorage.setItem('token_access', item.data.token_acess)
+                    localStorage.setItem('nivel', item.data.nivel)
                     this.$router.push("/home")
-                }else{
-                    this.$toast.add({ severity: 'error', summary: 'Erro', detail: item.message, life: 3000 })
+                } catch (error) {
+                    this.isLoading = false;
+                    this.$toast.add({ severity: 'error', summary: 'Erro', detail: error.response.data, life: 3000 })
+                    
                 }
             }
         }
@@ -35,13 +43,14 @@
 <template>
     <section class="form-side">
         <form @submit.prevent="login">
-            <div class="form-group">
-                <label for="">Usuário</label>
-                <input class="input" type="text" placeholder="Usuário" v-model="credential.login"  style="width: 100%;">
+            <div class="logo">
+                <img src="../assets/odonto_logo.png" width="90px" alt="" srcset="">
             </div>
             <div class="form-group">
-                <label for="">Senha</label>
-                <input class="input" :type="showSenhas? 'text' : 'password'" v-model="credential.password" placeholder="" style="width: 100%;">
+                <input class="input" type="text" placeholder="Digite seu usuário" v-model="credential.login"  style="width: 100%;">
+            </div>
+            <div class="form-group">
+                <input class="input" placeholder="Digite sua senha" :type="showSenhas? 'text' : 'password'" v-model="credential.password"  style="width: 100%;">
             </div>
             <div class="form-group">
                 <label class="checkbox">
@@ -58,7 +67,9 @@
 </template>
 
 <style scoped>
-
+    .button { 
+        background-color: #26348b;
+    }
     .form-side{
         position: absolute;
         top: 0;
@@ -69,9 +80,28 @@
         justify-content: center;
         align-items: center;
     }
+    .logo{
+        display: flex;
+        padding-block: 10px;
+        justify-content: center;
+    }
+    form {
+        padding: 30px;
+        border-radius: 30px;
+
+        background-image: linear-gradient(to bottom, #c3e1ff, #38a5dc);
+    }
     form .form-group{
         margin-bottom: 20px;
-        width: 300px;
+        width: 250px;
+    }
+
+    form .form-group label {
+        font-weight: 600;
+    }
+
+    input {
+        border: none;
     }
     form .form-group .input-text{
         display: block;
@@ -84,7 +114,7 @@
         outline: none;
     }
     .img-side{
-        background-image: URL('../assets/LOGO\ HORIZONTAL\ 02.png');
+        background-image: URL('../assets/clinica_bg.png');
         background-repeat: no-repeat;
         background-size: cover;
         top: 0;
@@ -95,5 +125,10 @@
     }
     .btn-login{
         width: 100px;
+    }
+
+    .checkbox {
+        color: white;
+        font-weight: 600;
     }
 </style>

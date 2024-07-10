@@ -4,14 +4,21 @@ import LoginViewVue from "./view/LoginView.vue";
 import TriagemViewVue from "./view/principal/TriagemView.vue";
 import HomeViewVue from "./view/HomeView.vue";
 import UsuariosViewVue from "./view/cadastros/UsuariosView.vue";
-import DashboardViewVue from './view/DashboardView.vue'
+import DashboardViewVue from './view/principal/DashboardView.vue'
 import SterilizeViewVue from "./view/equipamentos/SterilizeView.vue";
 import ManutencaoViewVue from "./view/equipamentos/ManutencaoView.vue";
+import MyInstrumentosViewVue from "./view/equipamentos/MyInstrumentosView.vue";
+import ConfirmViewVue from "./view/ConfirmView.vue";
 const routes = [
   {
     path: "/",
     name: "Login",
     component: LoginViewVue,
+  },
+  {
+    path: "/confirmacao/:accept/:ra/:id",
+    name: "confirm",
+    component: ConfirmViewVue,
   },
   {
     path: "/home",
@@ -32,7 +39,11 @@ const routes = [
       },
       {
         path: "cme", 
-        component: SterilizeViewVue
+        component: SterilizeViewVue,
+      },
+      {
+        path: "myInstrumentos", 
+        component: MyInstrumentosViewVue,
       },
       {
         path: "manutencao", 

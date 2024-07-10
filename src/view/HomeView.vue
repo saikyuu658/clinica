@@ -1,8 +1,7 @@
 <script>
-   import SideBarComponent from "@/components/SideBarComponent.vue"
-   import RequestHttp from "../http"
+    import SideBarComponent from "@/components/SideBarComponent.vue"
     import Toast from "primevue/toast"
-
+    import {setHeader} from '../http'
     export default {
         components: {
             Toast,
@@ -17,21 +16,8 @@
 
         methods: {
             async getAccess(){
-                const resp = await RequestHttp.getAccess()
-                if(resp.hasError){
-                    this.$toast.add({ severity: 'error', summary: 'Erro', detail: resp.response.data.message, life: 3000 })
-                    if(resp.response.status == 401){
-                        await new Promise(()=>{
-                            setTimeout(() => {
-                                this.$router.replace('/');
-                                localStorage.clear();
-                            }, 2000);
-                        })
-                    } 
-                }else{
-                    this.valuesSideNav = resp
-                    
-                }
+                this.valuesSideNav = localStorage.getItem('nivel')
+                setHeader(localStorage.getItem('token_access'))
             }
         },
 
@@ -41,7 +27,7 @@
     }
 </script>
 <template>
-    <SideBarComponent :access="valuesSideNav.access"></SideBarComponent>
+    <SideBarComponent :access="valuesSideNav"></SideBarComponent>
     <div class="body">
         <router-view></router-view>
     </div>

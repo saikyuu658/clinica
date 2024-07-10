@@ -179,7 +179,7 @@ export default {
     }
 }
 </script>
-<style>
+<style scoped>
     .table-dash{
         display: flex;
         justify-content: center;
@@ -190,20 +190,10 @@ export default {
         top: 50px;
         bottom: 0;
     }
-    .content-table{
-        height: 500px;
-        overflow: auto;
-    }
-
+    
     h1{
         margin: 10px;
         font-size: 23px;
         font-weight: 600;
-    }
-
-    .content-table table thead{
-        position: sticky;
-        top: -1px;
-        background-color: #ebebeb;
     }
 </style>

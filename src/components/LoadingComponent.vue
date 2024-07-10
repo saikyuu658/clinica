@@ -12,7 +12,7 @@ export default {
     mounted() {
         this.animationRive = new Rive({
             canvas: this.$refs.canvas,
-            src: __dirname+"../../rive/odonto.riv",
+            src: "/rive/odonto.riv",
             autoplay: true
         })
   }

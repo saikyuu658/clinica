@@ -7,7 +7,14 @@
             </div>
         </router-link>
         <ul>
-            <router-link :to="'/home/triagem'"  v-slot="{ isActive} ">
+            <router-link :to="'/home/myInstrumentos/'"  v-slot="{ isActive}" v-show="access == 'e' || access == 'a'">
+                <li v-bind:class="isActive? 'actived' : ''" v-tooltip="'Meus Instrumentos'">
+                    <span class="material-symbols-outlined">
+                        service_toolbox
+                    </span>
+                </li>
+            </router-link>
+            <router-link :to="'/home/triagem'"  v-slot="{ isActive} " v-show="access != 'e'">
                 <li v-bind:class="isActive? 'actived' : ''" v-tooltip="'Lista de atendimento'">
                     <span class="material-symbols-outlined">
                         list
@@ -21,15 +28,15 @@
                     </span>
                 </li>
             </router-link>
-            <router-link :to="'/home/cme'"  v-slot="{ isActive}" v-show="access != 'a'">
+            <router-link :to="'/home/cme/'"  v-slot="{ isActive}" v-show="access != 'a' && access != 'e'">
                 <li v-bind:class="isActive? 'actived' : ''" v-tooltip="'CME'">
                     <span class="material-symbols-outlined">
                         reset_wrench
                     </span>
                 </li>
             </router-link>
-        
-            <li v-on:click="logout">
+            
+            <li v-on:click="logout()">
                 <span class="material-symbols-outlined">
                     logout
                 </span>
@@ -47,13 +54,15 @@
         logout (){
             localStorage.clear();
             this.$router.replace('/');
-        }
-    }
+        },
+    },
+    
+   
   }
 </script>
 
 <style scoped>
-
+    
     .logo{
         /* background-color: white; */
     }
@@ -137,6 +146,8 @@
         height: 60px;
         border-bottom: solid 1px #00000040;
     }
+
+    
 
    
 </style>

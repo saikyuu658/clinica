@@ -171,37 +171,4 @@ export default {
     .form-group{
         margin-bottom: 20px;
     }
-    .filter{
-        position: absolute;
-        top: 5px;
-        height: 50px;
-        left: 0;
-        right: 10px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        justify-content: end;
-    }
-    .content-table{
-        border: solid 1px #00000035;
-        background-color: white;
-        font-size: 13px;
-        position: absolute;
-        top: 60px;
-        left: 5px;
-        right: 5px;
-        bottom: 5px;
-        box-shadow: 0 0 10px #00000020;
-        border-radius:3px;
-        margin: 5px;
-        overflow: auto;
-    }
-
-    .content-table thead th { 
-        position: sticky; 
-        top: 0; 
-        z-index: 1; 
-        padding-block: 15px;
-    }
-
 </style>
