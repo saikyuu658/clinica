@@ -23,7 +23,7 @@
                         login : this.credential.login,
                         senha : this.credential.password
                     }
-                    const item = await axios.post('http://192.168.103.0:3200/user/login', temp)
+                    const item = await axios.post(this.API_URL+'/user/login', temp)
 
 
                     this.isLoading = false;
