@@ -60,7 +60,7 @@
     @close="closeModal"
     >
         <template v-slot:header>
-            <h3>Novo Usuários</h3>
+            <h3>Novo Usussos</h3>
         </template>
         <template v-slot:body>
             <div class="row-group">
