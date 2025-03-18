@@ -7,15 +7,8 @@
             </div>
         </router-link>
         <ul>
-            <router-link :to="'/home/myInstrumentos/'"  v-slot="{ isActive}" v-show="access == 'e' || access == 'a'">
-                <li v-bind:class="isActive? 'actived' : ''" v-tooltip="'Meus Instrumentos'">
-                    <span class="material-symbols-outlined">
-                        service_toolbox
-                    </span>
-                </li>
-            </router-link>
-            <router-link :to="'/home/triagem'"  v-slot="{ isActive} " v-show="access != 'e'">
-                <li v-bind:class="isActive? 'actived' : ''" v-tooltip="'Lista de atendimento'">
+            <router-link :to="'/home/triagem'"  v-slot="{ isActive} " v-show="access != 'aluno'">
+                <li v-bind:class="isActive? 'actived' : ''" v-tooltip="'Lista de triagens'" >
                     <span class="material-symbols-outlined">
                         list
                     </span>
@@ -28,19 +21,39 @@
                     </span>
                 </li>
             </router-link>
-            <router-link :to="'/home/cme/'"  v-slot="{ isActive}" v-show="access != 'a' && access != 'e'">
-                <li v-bind:class="isActive? 'actived' : ''" v-tooltip="'CME'">
+            <router-link :to="'/home/esteriziar/'"  v-slot="{isActive}" >
+                <li v-bind:class="isActive? 'actived' : ''" v-tooltip="'CME'" v-show="access != 'aluno' && access != 'aluno-clinico'">
                     <span class="material-symbols-outlined">
                         reset_wrench
                     </span>
                 </li>
             </router-link>
-            
+            <router-link :to="'/home/myinstrumentos/'"  v-slot="{isActive}" >
+                <li v-bind:class="isActive? 'actived' : ''" v-tooltip="'Meus instrumentos'" v-show="access == 'aluno' || access == 'aluno-clinico'">
+                    <span class="material-symbols-outlined">
+                        reset_wrench
+                    </span>
+                </li>
+            </router-link>
+
+            <router-link :to="'/home/prontuario/'"  v-slot="{ isActive}" v-show="access != 'aluno' && access != 'aluno-clinico'">
+                <li v-bind:class="isActive? 'actived' : ''" v-tooltip="'Prontuários'">
+                    <span class="material-symbols-outlined">
+                        assignment
+                    </span>
+                </li>
+            </router-link>
+            <!-- <li v-tooltip="name" style="cursor: auto;">
+                <span class="material-symbols-outlined">
+                    account_circle
+                </span>
+            </li> -->
             <li v-on:click="logout()">
                 <span class="material-symbols-outlined">
                     logout
                 </span>
             </li>
+
         </ul>
     </nav>    
 </template>
@@ -49,14 +62,27 @@
   export default {
 
     props: ['access'],
+    data() {
+        return {
+            name: ''
+        }
+    },
 
     methods: {
         logout (){
             localStorage.clear();
             this.$router.replace('/');
         },
+        getInf(){
+            const nome = localStorage.getItem('nome');
+            this.name = nome || ''
+        }
+        
     },
-    
+    created() {
+        this.getInf()
+    },
+
    
   }
 </script>

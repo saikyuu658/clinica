@@ -1,6 +1,8 @@
 <template>
     <div class="bg-small-modal">
         <section class="confirm-dialog">
+            <slot name="header">
+            </slot>
             <slot name="body">
                 <h2>Default</h2>
             </slot>

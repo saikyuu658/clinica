@@ -25,10 +25,10 @@
                     }
                     const item = await axios.post(this.API_URL+'/user/login', temp)
 
-
                     this.isLoading = false;
                     localStorage.setItem('token_access', item.data.token_acess)
                     localStorage.setItem('nivel', item.data.nivel)
+                    localStorage.setItem('nome', item.data.nome)
                     this.$router.push("/home")
                 } catch (error) {
                     this.isLoading = false;
@@ -47,9 +47,11 @@
                 <img src="../assets/odonto_logo.png" width="90px" alt="" srcset="">
             </div>
             <div class="form-group">
+                <label for="">Usuário:</label>
                 <input class="input" type="text" placeholder="Digite seu usuário" v-model="credential.login"  style="width: 100%;">
             </div>
             <div class="form-group">
+                <label for="">Senha:</label>
                 <input class="input" placeholder="Digite sua senha" :type="showSenhas? 'text' : 'password'" v-model="credential.password"  style="width: 100%;">
             </div>
             <div class="form-group">
@@ -72,6 +74,7 @@
     }
     .form-side{
         position: absolute;
+        background-color: #65c1d8 ;
         top: 0;
         bottom: 0;
         left: 0;
@@ -88,16 +91,17 @@
     form {
         padding: 30px;
         border-radius: 30px;
+        width: 90%;
 
-        background-image: linear-gradient(to bottom, #c3e1ff, #38a5dc);
     }
     form .form-group{
         margin-bottom: 20px;
-        width: 250px;
     }
 
     form .form-group label {
         font-weight: 600;
+        color: white;
+        font-size: 15px;
     }
 
     input {

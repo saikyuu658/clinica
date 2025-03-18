@@ -1,14 +1,13 @@
-import { createWebHistory, createRouter } from "vue-router";
+import {  createRouter, createWebHistory, } from "vue-router";
 import LoginViewVue from "./view/LoginView.vue";
 
-import TriagemViewVue from "./view/principal/TriagemView.vue";
+import TriagemViewVue from "./view/TriagemView.vue";
 import HomeViewVue from "./view/HomeView.vue";
-import UsuariosViewVue from "./view/cadastros/UsuariosView.vue";
-import DashboardViewVue from './view/principal/DashboardView.vue'
-import SterilizeViewVue from "./view/equipamentos/SterilizeView.vue";
-import ManutencaoViewVue from "./view/equipamentos/ManutencaoView.vue";
-import MyInstrumentosViewVue from "./view/equipamentos/MyInstrumentosView.vue";
-import ConfirmViewVue from "./view/ConfirmView.vue";
+import UsuariosViewVue from "./view/UsuariosView.vue";
+import DashboardViewVue from './view/DashboardView.vue'
+import ProntuarioViewVue from "./view/ProntuarioView.vue"
+import CmeViewVue from "./view/equipamentos/CmeView.vue";
+import MeuInstrumentosView from "./view/equipamentos/MeuInstrumentosView.vue";
 const routes = [
   {
     path: "/",
@@ -16,12 +15,7 @@ const routes = [
     component: LoginViewVue,
   },
   {
-    path: "/confirmacao/:accept/:ra/:id",
-    name: "confirm",
-    component: ConfirmViewVue,
-  },
-  {
-    path: "/home",
+    path: "/home/",
     name: "Main",
     component: HomeViewVue,
     children: [
@@ -38,25 +32,25 @@ const routes = [
         component: UsuariosViewVue
       },
       {
-        path: "cme", 
-        component: SterilizeViewVue,
+        path: "esteriziar", 
+        component: CmeViewVue,
       },
       {
-        path: "myInstrumentos", 
-        component: MyInstrumentosViewVue,
+        path: "myinstrumentos", 
+        component: MeuInstrumentosView,
       },
       {
-        path: "manutencao", 
-        component: ManutencaoViewVue
-      }
+        path: "prontuario", 
+        component: ProntuarioViewVue,
+      },
       
     ]
   },
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
   routes,
+  history: createWebHistory()
 });
 
 export default router;

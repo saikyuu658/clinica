@@ -6,7 +6,7 @@
                     <h2>Default</h2>
                 </slot>
                         
-                <span class="icon close-modal button is-danger" v-on:click="close">
+                <span class="icon close-modal" v-on:click="close">
                     <span class="material-symbols-outlined">
                         close
                     </span>
@@ -34,6 +34,10 @@ export default {
 }
 </script>
 <style scoped>
+
+    .icon{
+        cursor: pointer;
+    }
     
     .bg-modal{
         position: absolute;
@@ -44,7 +48,7 @@ export default {
         bottom: 0;
         display: flex;
         align-items: center;
-        background-color: #00000032;
+        background-color: #00000067;
         justify-content: center;
     }
 
@@ -69,7 +73,7 @@ export default {
 
     
     .body-modal{
-        padding: 5px;
+        padding: 15px 5px;
         position: absolute;
         top: 50px;
         bottom: 50px;
@@ -80,11 +84,11 @@ export default {
 
     .content-modal{
         animation: animateModal 0.4s;
-        width: 50%;
-        height: 70%;
+        width:  50%;
+        height: 90%;
         background-color: white;
         border-radius: 3px;
-        box-shadow: 0 0 10px #00000035;
+        box-shadow: 0 0 10px #00000067;
         position: relative;
     }
 
@@ -96,5 +100,11 @@ export default {
         justify-content: end;
         gap: 10px;
         right: 25px;
+    }
+
+    @media (max-width: 1000px) {
+        .content-modal{
+            width:  80%;
+        }  
     }
 </style>

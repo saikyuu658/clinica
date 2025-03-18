@@ -1,21 +1,11 @@
 <template>
     <div class="bg-loading">
-        <div class="loding">
-            <canvas ref="canvas" width="500" height="500"></canvas>
-        </div>
+        <span class="loader"></span>
     </div>
 </template>
 <script>
-import { Rive } from '@rive-app/canvas'
 export default {
 
-    mounted() {
-        this.animationRive = new Rive({
-            canvas: this.$refs.canvas,
-            src: "/rive/odonto.riv",
-            autoplay: true
-        })
-  }
 }
 </script>
 <style scoped>
@@ -29,12 +19,25 @@ export default {
         background-color: #00000035;
     }
 
-    .loding{
-        width: 200px;
-        height: 200px;
-        border-radius: 30px;
-        transform: translate(-50%, -70%);
+    .loader {
+        width: 48px;
+        height: 48px;
+        border: 5px solid #FFF;
+        border-bottom-color: #3e8ed0;
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
     }
+
+    @keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+    } 
 
    
 </style>
