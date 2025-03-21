@@ -80,36 +80,44 @@
             <h3 style="font-size: large;">Atualizar Usuário</h3>
         </template>
         <template v-slot:body>
-            <div class="center" >
-                <div class="form-group">
-                    <label for="">Nome</label>
-                    <InputText type="text" v-model="usuario.nome" placeholder="Nome completo" style="width: 300px;"/>
+            <Steps :model="steps" :activeStep="activeStep" @update:activeStep="setStep"/>
+            <div v-if="activeStep === 0" class="configUsers">
+                    <div class="center" >
+                        <div class="form-group">
+                            <label for="">Nome</label>
+                            <InputText type="text" v-model="usuario.nome" placeholder="Nome completo" style="width: 300px;"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="">Telefone</label>
+                            <InputText type="tel" v-model="usuario.telefone" placeholder="(00) 00000-0000" v-mask="'(##) # ####-####'" />
+                        </div>
+                        <div class="form-group">
+                            <label for="">Login</label>
+                            <InputText type="text" v-model="usuario.login" placeholder="Digite o login" />
+                        </div>
+                        <div class="form-group">
+                            <label for="">Nível</label>
+                            <Dropdown  v-model="usuario.nivel" :options="['funcionario', 'professor']" placeholder="Selecione os instrumentos" />
+                        </div>
+                        <div class="form-group">
+                            <label for="">Senha</label>
+                            <InputText type="password" v-model="usuario.senha" placeholder="Digite a senha" style="width: 300px;"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="">Email</label>
+                            <InputText type="email" v-model="usuario.email" placeholder="exemple@flucianofeijao.com"  style="width: 300px;"/>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="">Telefone</label>
-                    <InputText type="tel" v-model="usuario.telefone" placeholder="(00) 00000-0000" v-mask="'(##) # ####-####'" />
+                <div v-if="activeStep === 1" class="activitiesUsers">
+
                 </div>
-                <div class="form-group">
-                    <label for="">Login</label>
-                    <InputText type="text" v-model="usuario.login" placeholder="Digite o login" />
-                </div>
-                <div class="form-group">
-                    <label for="">Nível</label>
-                    <Dropdown  v-model="usuario.nivel" :options="['funcionario', 'professor']" placeholder="Selecione os instrumentos" />
-                </div>
-                <div class="form-group">
-                    <label for="">Senha</label>
-                    <InputText type="password" v-model="usuario.senha" placeholder="Digite a senha" style="width: 300px;"/>
-                </div>
-                <div class="form-group">
-                    <label for="">Email</label>
-                    <InputText type="email" v-model="usuario.email" placeholder="exemple@flucianofeijao.com"  style="width: 300px;"/>
-                </div>
-            </div>
-        </template>
-        <template v-slot:footer>
-            <Button label="Cancelar" severity="secondary" v-on:click="()=>closeModalEdit()"></Button>
-            <Button label="Salvar"></Button>
+            </template>
+            <template v-slot:footer>
+                <Button label="Voltar" v-if="activeStep > 0" @click="prevStep"></Button>
+                <Button label="Próximo" v-if="activeStep < steps.length - 1" @click="nextStep"></Button>                
+                <Button label="Cancelar" severity="secondary" v-on:click="()=>closeModalEdit()"></Button>
+                <Button label="Salvar"></Button>
         </template>
     </ModalComponentVue>
 
@@ -120,6 +128,7 @@
     import ModalComponentVue from '@/components/ModalComponent.vue'
     import FilterComponent from '@/components/FilterComponent.vue';
     import {http} from '../http';
+    import Steps from 'primevue/steps';
     import {mask} from 'vue-the-mask'
     import LoadingComponentVue from '@/components/LoadingComponent.vue';
     import Button from 'primevue/button';
@@ -128,6 +137,7 @@
     export default {
         components: {
             Button,
+            Steps,
             FilterComponent,
             ModalComponentVue,
             ModalSmallComponent,
@@ -137,7 +147,7 @@
         },
 
         directives: {mask},
-        
+
         data(){
             return {
                 items : [
@@ -175,11 +185,29 @@
                     }
                 ],
 
-                
+                steps: [ {label: 'Configurações'}, {label: 'Atividades'} ], 
+                activeStep: 0
             }
         },
         
         methods: {
+
+            nextStep() {
+                if (this.activeStep < this.steps.length - 1){
+                    this.activeStep++;
+                }
+            },
+
+            prevStep(){
+                if (this.activeStep > 0){
+                    this.activeStep--
+                }
+            },
+
+            setStep(newStep) {
+                this.activeStep = newStep;
+            },
+            
             closeModalEdit(){
                 this.isModalEditVisible = false;
                 this.usuario = {
