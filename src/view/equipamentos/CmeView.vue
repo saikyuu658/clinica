@@ -486,7 +486,7 @@ export default {
 
         async aceitarMovimento(){
             this.movimento.status = 'aceita'
-            await this.updateMovimento()
+            this.applyFilter()
             this.closeModal('validar')
         },
         

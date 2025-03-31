@@ -154,7 +154,7 @@
            
         </template>
         <template v-slot:footer>
-            <button class="button is-info is-small" v-on:click="updateUser" >Salvar Alterações</button>
+            <button class="button is-info is-small" v-on:click="updateUser()" >Salvar Alterações</button>
         </template>
     </ModalComponentVue>
 

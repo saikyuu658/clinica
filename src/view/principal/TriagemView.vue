@@ -73,7 +73,7 @@
             </Column>
             <Column>
                 <template #body="slotProps">
-                    <div style="{display: flex;}">
+                    <div :style="{display: flex}">
                         <span 
                             v-tooltip.bottom="'Marcar como Agendado'"
                             v-on:click="showSmallModal(slotProps.data)"
@@ -120,7 +120,7 @@
             </Column>
             <Column>
                 <template #body="slotProps">
-                    <div style="{display: flex;}">
+                    <div :style="{display: flex}">
                         <span 
                         v-tooltip.bottom="'Marcar como Agendado'"
                         v-on:click="showSmallModal(slotProps.data)"
@@ -167,7 +167,7 @@
             </Column>
             <Column>
                 <template #body="slotProps">
-                    <div style="{display: flex;}">
+                    <div :style="{display: flex}">
                         <span 
                         v-tooltip.bottom="'Marcar como Agendado'"
                         v-on:click="showSmallModal(slotProps.data)"
@@ -365,7 +365,7 @@
                                     <td>{{ `${item.elemento_dental}  ${item.regiao_dental!=""? '-'  + item.regiao_dental : ''  } ${item.cavidade_bucal!=""? '-'  + item.cavidade_bucal : ''}` }}</td>
                                     <td>{{ item.clinica }}</td>
                                     <td>
-                                        <div style="{display: flex;}">
+                                        <div :style="{display: flex}">
                                             <span class="material-symbols-outlined" v-on:click="removeProcedure(index)">
                                                 delete
                                             </span>
