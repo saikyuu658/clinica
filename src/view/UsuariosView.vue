@@ -14,9 +14,7 @@
     </div>
     <section class="content-table"> 
         <div class="content-card">
-
             <div class="user-card" v-for="(item, index) of listComputed" :key="index"  v-on:click="showModalEdit(item)">
-                <img src="../assets/FeiJondonto.png"  class="user-image" >
                 <div class="user-info"> 
                     <div class="user-name">{{ item.nome }}</div>
                     <div class="user-level">Nível: {{ convertNivel(item.nivel) }} </div>
@@ -24,7 +22,6 @@
                 </div>
             </div>
         </div>
-
     </section>
 
 
@@ -109,7 +106,7 @@
         </template>
         <template v-slot:footer>
             <Button label="Cancelar" severity="secondary" v-on:click="()=>closeModalEdit()"></Button>
-            <Button label="Salvar"></Button>
+            <Button label="Salvar"  v-on:click="()=>updateUser()"/>
         </template>
     </ModalComponentVue>
 

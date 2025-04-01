@@ -76,6 +76,7 @@
         getInf(){
             const nome = localStorage.getItem('nome');
             this.name = nome || ''
+
         }
         
     },
