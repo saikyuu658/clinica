@@ -2,14 +2,25 @@
   <div class="filter">
     <span class="title-filter">Prontuários</span>
     <div class="right-filter">
-      <Button v-on:click="showModal" label="Novo Prontuário" ></Button>
-      <Button v-on:click="() => { filterSidebar = true;}" icon="pi pi-filter"></Button>
+      <Button v-on:click="showModal" label="Novo Prontuário"></Button>
+      <Button
+      v-on:click="
+          () => {
+            filterSidebar = true;
+          }
+          "
+        icon="pi pi-filter"
+        ></Button>
+      <Paginator :rows="10" :totalRecords="120" :rowsPerPageOptions="[10, 20, 30]"></Paginator>
 
       <SideFilterComponentVue @close="closeFilter" v-show="filterSidebar">
         <template v-slot:body>
           <div class="form-group">
             <label for="">Mostrar listas </label>
-            <select class="is-small input is-fullwidth" v-model="filterSelected">
+            <select
+              class="is-small input is-fullwidth"
+              v-model="filterSelected"
+            >
               <option value="finalizado">Tratamento finalizado</option>
               <option value="tratamento">Em tratamento</option>
             </select>
@@ -17,7 +28,11 @@
         </template>
 
         <template v-slot:footer>
-          <Button style="width: 100%;" v-on:click="applyFilter()" label="Aplicar Filtro" />
+          <Button
+            style="width: 100%"
+            v-on:click="applyFilter()"
+            label="Aplicar Filtro"
+          />
         </template>
       </SideFilterComponentVue>
       <FilterComponent @searchValue="search"></FilterComponent>
@@ -35,119 +50,121 @@
       border-radius: 30px;
       display: flex;
       align-items: center;
-    "
+      "
   >
-   
-    Filtro: <span style="font-weight: bold; font-size: 15px">{{`   ${showFilterSelected}`}}</span>
+  Filtro:
+  <span style="font-weight: bold; font-size: 15px">{{
+    `   ${showFilterSelected}`
+  }}</span>
   </div>
   <section class="content-table">
     <DataTable
-      :value="listComputed"
-      sortField="status"
-      :sortOrder="(sortDirection = 'Em tratamento' ? 1 : -1)"
-      scrollable
-      scrollHeight="flex"
-      tableStyle="min-width: 70rem"
+    :value="listComputed"
+    sortField="status"
+    :sortOrder="(sortDirection = 'Em tratamento' ? 1 : -1)"
+    scrollable
+    scrollHeight="flex"
+    tableStyle="min-width: 70rem"
     >
-      <template #empty> Nenhum procedimento registrado. </template>
-      <Column field="prontuario" header="Prontuário"></Column>
-      <Column field="paciente" header="Paciente"></Column>
-      <Column field="created_at" header="Dt. cadastro">
-        <template #body="slotProps">
-          {{ formatDate(slotProps.data.created_at) }}
-        </template>
-      </Column>
-      <Column field="updated_at" header="Dt. Finalizado">
-        <template #body="slotProps">
-          {{ formatDate(slotProps.data.updated_at) }}
-        </template>
-      </Column>
-      <Column field="id" header="editar">
-        <template #body="slotProps">
-          <div style="display: flex">
-            <span
-              v-if="slotProps.data.status != 'Tratamento finalizado'"
-              v-on:click="showModalConfirm(slotProps.data)"
-              v-tooltip.bottom="'finalizar tratamento'"
-              class="material-symbols-outlined btn"
-            >
-              check_circle
-            </span>
-          </div>
-        </template>
-      </Column>
-    </DataTable>
-  </section>
-
-  <LoadingComponentVue v-show="isLoading"></LoadingComponentVue>
-  <ModalComponentVue @close="closeModalNovo" v-show="isVisibleModalNovo">
-    <template v-slot:header>
-      <div class="header-top-modal">
-        <h2 class="is-size-5">Novo prontuário</h2>
-        <span class="material-symbols-outlined btn" v-on:click="closeModalNovo">
-          close
+    <template #empty> Nenhum procedimento registrado. </template>
+    <Column field="prontuario" header="Prontuário"></Column>
+    <Column field="paciente" header="Paciente"></Column>
+    <Column field="created_at" header="Dt. cadastro">
+      <template #body="slotProps">
+        {{ formatDate(slotProps.data.created_at) }}
+      </template>
+    </Column>
+    <Column field="updated_at" header="Dt. Finalizado">
+      <template #body="slotProps">
+        {{ formatDate(slotProps.data.updated_at) }}
+      </template>
+    </Column>
+    <Column field="id" header="editar">
+      <template #body="slotProps">
+        <div style="display: flex">
+          <span
+          v-if="slotProps.data.status != 'Tratamento finalizado'"
+          v-on:click="showModalConfirm(slotProps.data)"
+          v-tooltip.bottom="'finalizar tratamento'"
+          class="material-symbols-outlined btn"
+          >
+          check_circle
         </span>
       </div>
-      <hr />
     </template>
+  </Column>
+</DataTable>
+</section>
 
-    <template v-slot:body>
-      <div class="row-group">
-        <div class="form-group">
-          <label for="">Nº do prontuário</label>
-          <input
-            type="text"
-            autocomplete="off"
-            style="width: 300px"
-            v-model="novoProntuario.prontuario"
-            class="input is-small is-full"
-            id="setBoxStudent"
+<LoadingComponentVue v-show="isLoading"></LoadingComponentVue>
+<ModalComponentVue @close="closeModalNovo" v-show="isVisibleModalNovo">
+  <template v-slot:header>
+    <div class="header-top-modal">
+      <h2 class="is-size-5">Novo prontuário</h2>
+      <span class="material-symbols-outlined btn" v-on:click="closeModalNovo">
+        close
+      </span>
+    </div>
+    <hr />
+  </template>
+  
+  <template v-slot:body>
+    <div class="row-group">
+      <div class="form-group">
+        <label for="">Nº do prontuário</label>
+        <input
+          type="text"
+          autocomplete="off"
+          style="width: 300px"
+          v-model="novoProntuario.prontuario"
+          class="input is-small is-full"
+          id="setBoxStudent"
           />
-        </div>
-        <div class="form-group">
-          <label for="">Paciente</label>
-          <select
+          </div>
+          <div class="form-group">
+            <label for="">Paciente</label>
+            <select
             autocomplete="off"
             style="width: 300px"
             v-model="novoProntuario.paciente"
             class="input is-small is-full"
-          >
+            >
             <option :value="0">Selecione</option>
             <option
-              :value="item.id"
-              v-for="(item, index) in listPaciente"
-              :key="index"
+            :value="item.id"
+            v-for="(item, index) in listPaciente"
+            :key="index"
             >
-              {{ item.nome }}
-            </option>
-          </select>
-        </div>
+            {{ item.nome }}
+          </option>
+        </select>
       </div>
-    </template>
+    </div>
+  </template>
+  
+  <template v-slot:footer>
+    <button
+    class="button is-info is-small"
+    @click="createNewProntuario(true)"
+    >
+    salvar e Novo
+  </button>
+  <button
+  class="button is-success is-small"
+  @click="createNewProntuario(false)"
+  >
+  salvar
+</button>
+</template>
+</ModalComponentVue>
 
-    <template v-slot:footer>
-      <button
-        class="button is-info is-small"
-        @click="createNewProntuario(true)"
-      >
-        salvar e Novo
-      </button>
-      <button
-        class="button is-success is-small"
-        @click="createNewProntuario(false)"
-      >
-        salvar
-      </button>
-    </template>
-  </ModalComponentVue>
-
-  <ModalComponentVue @close="closeConfirmModal" v-show="isVisibleModalConfirm">
-    <template v-slot:header>
-      <div class="header-top-modal">
-        <h2 class="is-size-5">Confirmar fim do tratamento</h2>
-        <span
-          class="material-symbols-outlined btn"
-          v-on:click="closeConfirmModal"
+<ModalComponentVue @close="closeConfirmModal" v-show="isVisibleModalConfirm">
+  <template v-slot:header>
+    <div class="header-top-modal">
+      <h2 class="is-size-5">Confirmar fim do tratamento</h2>
+      <span
+      class="material-symbols-outlined btn"
+      v-on:click="closeConfirmModal"
         >
           close
         </span>
@@ -176,6 +193,7 @@
     </template>
   </ModalComponentVue>
 </template>
+
 <script lang="js">
 import {http} from '@/http';
 import DataTable from 'primevue/datatable';
@@ -186,6 +204,7 @@ import SideFilterComponentVue from '@/components/SideFilterComponent.vue';
 import LoadingComponentVue from '@/components/LoadingComponent.vue'
 import ModalComponentVue from '@/components/ModalSmallComponent.vue'
 export default {
+  
     components: {
             DataTable,
             LoadingComponentVue,
@@ -224,7 +243,7 @@ export default {
                 this.isLoading = true;
                 const resp = await http.get('prontuario/'+this.filterSelected);
                 this.listTableProntuarios = resp.data;
-           
+
                 this.showFilterSelected = resp.data[0].status;
                 this.statusOrdem = resp.data[0].status;
                 this.isLoading = false;
