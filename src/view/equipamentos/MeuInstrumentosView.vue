@@ -72,7 +72,11 @@
                     <div class="row-actions">
                         <dropdown  v-model="selectedinstrumentosToSterilize" :options="instrumentos" optionLabel="nome" placeholder="Selecione os instrumentos"  style="width: 100%; max-width:500px ;" />
                         <InputText type="number" v-model="quantidade" placeholder="Quantidade"  style="width: 60px;"/>
-                        <Button icon="pi pi-plus" type="submit"></Button>
+                        <Button type="submit" style="display: flex; justify-items: center;"> 
+                            <span class="material-symbols-outlined">
+                                add
+                            </span>
+                        </Button>
                     </div>
                 </form>
                     
@@ -84,7 +88,9 @@
                             <tr v-for="(item, index) of instrumentosTemporario" :key="index">
                                 <td>{{ item.nome }}</td>
                                 <td style="width: 5%;">
-                                    <i class="pi pi-trash" style="cursor: pointer;" v-on:click="()=>{instrumentosTemporario.splice(index, 1)}"></i>
+                                    <span class="material-symbols-outlined" style="cursor: pointer;" v-on:click="()=>{instrumentosTemporario.splice(index, 1)}">
+                                        delete
+                                    </span>
                                 </td>
                             </tr>
                         </tbody>
