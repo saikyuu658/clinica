@@ -6,23 +6,30 @@
                 <Button v-on:click="openModal()" >
                     Esterilizar Itens
                 </Button>
-                
             </div>
-        
         </div>
 
         <section class="content-table"> 
             <DataTable 
+                expandableRowGroups 
                 scrollable 
                 tableStyle="min-width: 70rem"
                 scrollHeight="flex" 
+                sortField="dt_sterilize"
                 :value="listaInstrumento" 
                 :sortOrder="1"
-                sortField="id"
+                rowGroupMode="subheader"
+                groupRowsBy="created_at"
+                v-model:expandedRowGroups="expandedRowGroups"
+
             >
                 <template #empty> 
                         Nenhum equipamento enviado.
                 </template> 
+                <template #groupheader="slotProps">
+                    <b>{{ formatDate(slotProps.data.created_at) }}</b>
+                </template>
+                 
                 <Column field="nome" header="Nome"></Column>
                 <Column field="status" header="Status">
                     <template #body="slotProps">
@@ -39,11 +46,17 @@
                         </span>
                     </template>
                 </Column>
-                <Column field="dt_sterilize" header="Ult. Esteri.">
+                <Column field="data_utilizar" header="Data da Utilização">
+                    <template #body="slotProps">
+                        {{ slotProps.data.data_utilizar? new Date(slotProps.data.data_utilizar).toLocaleDateString('pt-BR') : '-' }}
+                    </template>
+                </Column>
+                <Column field="created_at" header="Data do Envio">
                     <template #body="slotProps">
                         {{ formatDate(slotProps.data.created_at) }}
                     </template>
                 </Column>
+               
             </DataTable>
         </section>
         
@@ -80,8 +93,6 @@
                     </div>
                 </form>
                     
-            
-            
                 <div class="content-list-table" style="max-height: 75%">
                     <table class="list-equip-table">
                         <tbody>
@@ -96,10 +107,17 @@
                         </tbody>
                     </table>
                 </div>
-                <p class="total-tabela">Total: {{ instrumentosTemporario.length }}</p>
+                <div class="total-tabela">
+                    <label for="">Data da Utilização: </label>
+                    <InputText type="date" 
+                        v-model="diaUtilizacao"  style="max-width: 200px;"/>
+                </div>
         </template>
         <template v-slot:footer>
-            <Button label="Enviar" @click="enviarInstrumentos()"></Button>
+            <div class="footer-modal">
+                <p class="total-tabela">Total: {{ instrumentosTemporario.length }}</p>
+                <Button label="Enviar" @click="enviarInstrumentos()"></Button>
+            </div>
         </template>
 
     </ModalComponent>
@@ -128,12 +146,9 @@ export default {
     data() {
        return {
             isModalSendList: false,
-            listaInstrumento: [{
-                id: 0,
-                nome: '',
-                status: 0
-            }],
+            listaInstrumento: [],
             selectedinstrumentosToSterilize: undefined,
+            expandedRowGroups: null,
 
             instrumentos: [{
                 nome: '',
@@ -142,6 +157,7 @@ export default {
             }],
 
             instrumentosTemporario: [],
+            diaUtilizacao: '',
             quantidade: 1,
             isLoading: false
        }
@@ -190,7 +206,6 @@ export default {
                 const resp = await http.get('esterilizar/alunosInstrumentos/');
                 this.listaInstrumento = resp.data
                 this.isLoading = false;
-                console.log(resp.data)
             } catch (error) {
                 this.isLoading = false;
                 this.$toast.add({ severity: 'error', summary: 'Erro', detail: error.response.data, life: 3000 })
@@ -209,14 +224,15 @@ export default {
                     listInstrumentos.push({id_instrumento : instrumentos.id})
                 }
                 let temp = {
+                    data_utilizacao: this.diaUtilizacao?? null,
                     listInstrumentos : listInstrumentos
                 };
+
                 const resp = await http.post('esterilizar/movimento', temp);
                 this.isLoading = false;
                 this.$toast.add({ severity: 'success', summary: 'Sucesso', detail: resp.data, life: 3000 })
                 this.closeModalLarge()
                 this.getMyInstrumentos()
-
             } catch (error) {
                 this.isLoading = false;
                 this.$toast.add({ severity: 'error', summary: 'Erro', detail: error.response.data, life: 3000 })
@@ -231,9 +247,16 @@ export default {
 }
 </script>
 <style scoped>
-
+    .footer-modal{
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+    }
     .total-tabela{
-        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
         font-weight: 600;
         font-size: 14px;
         color: black;

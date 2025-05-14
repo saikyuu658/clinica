@@ -4,11 +4,13 @@
             <span class="title-filter">Procedimentos</span>
            
             <div class="right-filter">
-                <button class="button is-info is-small" v-on:click="showFiltesr">
+                <!-- <button class="button is-info is-small" v-on:click="showFiltesr">
                     <span class="material-symbols-outlined">
                         filter_alt
                     </span>
-                </button>
+                </button> -->
+                <Button  v-on:click="showFiltesr" icon="pi pi-filter"></Button>
+
 
                 <SideFilterComponent
                 @close="closeFilter"
@@ -18,20 +20,22 @@
                     <template v-slot:body>
                         <div class="form-group">
                             <label for="">Agrupar por: </label>
-                            <select class="is-small input is-fullwidth" v-model="filterGroup"  id="">
+                            <Dropdown v-model="filterGroup"  :options="filterOptions" optionLabel="name" optionValue="value" placeholder="Selecione uma opção" option  class="inputdropdown" />
+
+                            <!-- <select class="is-small input is-fullwidth" v-model="filterGroup"  id="">
                                 <option value="procedure">Procedimento</option>
                                 <option value="patient">Paciente</option>
                                 <option value="clinic">Clínica</option>
-                            </select>
+                            </select> -->
                         </div>
                     </template>
 
                     <template v-slot:footer>
-                        <button class="button is-small is-fullwidth is-info" v-on:click="applyFilter">Aplicar Filtro</button>
+                        <Button  style="width: 100%;" v-on:click="applyFilter" label="Aplicar Filtro" />
                     </template>
                 </SideFilterComponent>
 
-                <button class="button is-info is-small" v-on:click="showModal">Nova Triagem</button>
+                <Button v-on:click="showModal">Nova Triagem</Button>
                 
                 <FilterComponent
                     @searchValue="search"
@@ -547,9 +551,11 @@
     import ModalSmallComponentVue from '@/components/ModalSmallComponent.vue'
     import LoadingComponentVue from '@/components/LoadingComponent.vue'
     import ModalComponente from '@/components/ModalComponent.vue'
-
+    import Button from 'primevue/button';
+    import Dropdown from 'primevue/dropdown'
     export default {
         components: {
+            Button,
             ModalComponente,
             FilterComponent,
             ModalLargeComponentVue,
@@ -559,7 +565,8 @@
             DataTable,
             Column,
             SideFilterComponent,
-            LoadingComponentVue
+            LoadingComponentVue,
+            Dropdown
         },
         directives: {mask},
         data(){
@@ -573,6 +580,11 @@
                 searchInput: "",
                 listTableProcedures: [],
                 expandedRowGroups: null,
+                filterOptions: [
+                    {name: 'Procedimento', value: 'procedure'},
+                    {name: 'Paciente', value: 'patient'},
+                    {name: 'Clínica', value: 'clinic'},
+                ],
                 
                 newPatient: {
                     cpf: "",
@@ -991,6 +1003,10 @@
 
     .content-empty-message h3{
         font-size: 18px
+    }
+
+    .inputdropdown{
+        width: 100%;
     }
     
     

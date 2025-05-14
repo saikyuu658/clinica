@@ -101,6 +101,7 @@
                 <input class="input is-small" type:email v-model="usuario.email" placeholder="exemple@exemple.com" style="width: 300px;">
             </div>
 
+
             
         </template>
         <template v-slot:footer>
@@ -155,6 +156,7 @@
         </template>
         <template v-slot:footer>
             <button class="button is-info is-small" v-on:click="updateUser()" >Salvar Alterações</button>
+
         </template>
     </ModalComponentVue>
 
@@ -293,6 +295,22 @@
                     this.$toast.add({ severity: 'error', summary: 'Erro', detail: error.response.data.message, life: 3000 })
                 }
             },
+
+            async delete(){
+                try {
+                    this.isLoading = true;
+                    await http.delete('user/'+this.usuario.id,);
+                    this.isLoading = false;
+                    this.$toast.add({ severity: 'success', summary: 'Success Message', detail: 'Adicionado com sucesso', life: 3000 })
+                    this.isModalVisible = false;
+                    this.listUsers()
+
+                } catch (error) {
+                    this.isLoading = false;
+                    this.$toast.add({ severity: 'error', summary: 'Erro', detail: error.response.data.message, life: 3000 })
+                }
+            },
+
 
             async listUsers(){
                 try {

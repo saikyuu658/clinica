@@ -105,6 +105,7 @@
             </div>
         </template>
         <template v-slot:footer>
+            <Button label="Delete" severity="danger" v-on:click="()=>deletarUsuario()"></Button>
             <Button label="Cancelar" severity="secondary" v-on:click="()=>closeModalEdit()"></Button>
             <Button label="Salvar"  v-on:click="()=>updateUser()"/>
         </template>
@@ -275,6 +276,22 @@
                     this.$toast.add({ severity: 'error', summary: 'Erro', detail: error.response.data.message, life: 3000 })
                 }
             },
+
+            async deletarUsuario(){
+                try {
+                    this.isLoading = true;
+                    await http.delete('user/'+this.usuario.id,);
+                    this.isLoading = false;
+                    this.$toast.add({ severity: 'success', summary: 'Success Message', detail: 'Usuário inativado com sucesso', life: 3000 })
+                    this.isModalVisible = false;
+                    this.listUsers()
+
+                } catch (error) {
+                    this.isLoading = false;
+                    this.$toast.add({ severity: 'error', summary: 'Erro', detail: error.response.data.message, life: 3000 })
+                }
+            },
+
 
             async listUsers(){
                 try {

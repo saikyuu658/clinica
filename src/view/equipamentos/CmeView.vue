@@ -74,9 +74,9 @@
                     {{ formatDate(slotProps.data.created_at) }}
                 </template>
             </Column>
-            <Column field="updated_at" sortable header="Dt. Atualização">
+            <Column field="data_utilizar" sortable header="Dt. Utilização">
                 <template #body="slotProps">
-                    {{ formatDate(slotProps.data.updated_at) }}
+                    {{ slotProps.data.data_utilizar?  formatDate(slotProps.data.data_utilizar) : '-' }}
                 </template>
             </Column>
             <Column field="qtd" header="Qtd. Instru."></Column>
@@ -231,7 +231,7 @@
 
             <div class="form-group"  v-show="movimento.status  == 'rejeitada'">
                 <label for="justificativa">Justificativa</label>
-                <p class="justificativa-span">{{ movimento.justificativa }}</p>
+                <p class="justificativa-span">{{ movimento.justificativa??"Nenhuma justificativa foi inserida" }}</p>
             </div>
             <div class="content-list-table">
                 <table class="list-equip-table">
@@ -247,7 +247,7 @@
         <template v-slot:footer>
             <div class="actions-footer">
                 <Button label="Altera lista" @click="closeModal('detalhar');openModal('alterar')" severity="success"  v-show="filterSelected !='rejeitada'"></Button>
-                <Button label="Salvar" @click="updateMovimento()"  v-show="filterSelected !='rejeitada'"></Button>
+                <Button label="Salvar" @click="atualizarMovimento()"  v-show="filterSelected !='rejeitada'"></Button>
             </div>
         </template>
     </ModalComponentVue>
@@ -281,13 +281,15 @@
         <template v-slot:body>
             <div class="form-group">
                 <label for="">Opções </label>
-                <select class="is-small input is-fullwidth" v-model="filterSelected">
+                <Dropdown v-model="filterSelected"  :options="filterOptions" optionLabel="name" optionValue="value" placeholder="Selecione uma opção" option  class="inputdropdown" />
+
+                <!-- <select class="input is-fullwidth" v-model="filterSelected">
                     <option value="todas">Todas</option>
                     <option value="solicitada">Solicitadas</option>
                     <option value="pendente">Pendentes de confirmação</option>
                     <option value="aceita">Aceitas</option>
                     <option value="rejeitada">Rejeitadas</option>
-                </select>
+                </select> -->
             </div>
         </template>
 
@@ -336,6 +338,13 @@ export default {
             filterSelected : 'solicitada',
             showFilterSelected: 'Solicitadas',
             quantidade: 1,
+            filterOptions: [
+                {name: 'Todas', value: 'todas'},
+                {name: 'Solicitadas', value: 'solicitada'},
+                {name: 'Pendentes de confirmação', value: 'pendente'},
+                {name: 'Aceitas', value: 'aceita'},
+                {name: 'Rejeitadas', value: 'rejeitada'}
+            ],
             movimentos: [{
                 id: 0,
                 status: '',
@@ -422,6 +431,10 @@ export default {
             }
         },
 
+        async atualizarMovimento(){
+            await this.updateMovimento()
+            this.closeModal('detalhar')
+        },
         
         formatFiltros(val){
             switch (val) {
@@ -441,10 +454,12 @@ export default {
         },  
 
         async applyFilter(){
+
             try {
                 this.isLoading = true;
                 const resp = await http.get('esterilizar/movimentos/'+this.filterSelected);
                 this.movimentos = resp.data;
+                console.log(resp.data)
                 this.isLoading = false;
                 this.isShowfilterSidebar = false;
                 this.showFilterSelected = this.formatFiltros(this.filterSelected)
@@ -486,6 +501,7 @@ export default {
 
         async aceitarMovimento(){
             this.movimento.status = 'aceita'
+            await this.updateMovimento()
             this.applyFilter()
             this.closeModal('validar')
         },
@@ -532,7 +548,7 @@ export default {
                 const resp = await http.put('esterilizar/movimento', this.movimento);
                 this.$toast.add({ severity: 'success', summary: 'Sucesso', detail: resp.data, life: 3000 })
                 this.isLoading = false;
-                this.getAllMovimentos()
+                this.applyFilter()
             } catch (error) {
                 this.isLoading = false;
                 this.$toast.add({ severity: 'error', summary: 'Erro', detail: error.response.data, life: 3000 })
@@ -656,6 +672,10 @@ export default {
     #print .lista-items{
         padding: 3vw;
         
+    }
+
+    .inputdropdown{
+        width: 100%;
     }
 
     .ass{
