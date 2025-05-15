@@ -358,16 +358,16 @@ export default {
                 id : 0
             }],
             movimento: {
-                updated_at: '',
-                status: '',
-                justificativa: '',
-                ra: '',
-                nome: '',
-                caixa: '',
-                listaInstrumentos: [{
-                    nome: '',
-                    id: 0
-                }]
+                // updated_at: '',
+                // status: '',
+                // justificativa: '',
+                // ra: '',
+                // nome: '',
+                // caixa: '',
+                // listaInstrumentos: [{
+                //     nome: '',
+                //     id: 0
+                // }]
             },
             listaInstrumentosTemporaria: [{
                 nome: '',

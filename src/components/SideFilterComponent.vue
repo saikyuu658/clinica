@@ -1,10 +1,7 @@
 <template>
     <section class="side-nav-filter">
         <div class="nav-head">
-            <slot name="head">
-                Filtros
-            </slot>
-
+            <h3>Filtros</h3>
             <button class="button is-small close" v-on:click="close">
                 <span class="material-symbols-outlined">
                     close
@@ -34,8 +31,10 @@ export default {
 </script>
 <style lang="css">
     .close{
-        float: right;
+        position: absolute;
         border: none;
+        top: 0;
+        right: 5px;
     }
     
     .side-nav-filter{
@@ -51,10 +50,14 @@ export default {
     }
 
     .nav-head{
-        font-size: 25px;
         padding: 5px;
         font-weight: bold;
-        height: 70px;
+        font-size: 55px;
+        height: 50px;
+    }
+
+    h3{
+        font-size: 25px;
     }
 
     .side-footer{

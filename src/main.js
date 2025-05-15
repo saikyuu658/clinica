@@ -13,7 +13,7 @@ const app = createApp(App)
   .use(ToastService)
   .directive("tooltip", Tooltip);
 
-  app.config.globalProperties.API_URL = "http://portal.if.edu.br:3200";
-  // app.config.globalProperties.API_URL = "http://192.168.200.35:3200";
+  // app.config.globalProperties.API_URL = "http://portal.if.edu.br:3200";
+  app.config.globalProperties.API_URL = "http://192.168.200.35:3200";
   // app.config.globalProperties.API_URL = "http://localhost:3200";
 app.mount("#app");

@@ -20,7 +20,6 @@
 
 *:not(.material-symbols-outlined, .p-button-icon){
     font-family: 'Poppins';
-    font-size: 13px;
 }
 
 .input{

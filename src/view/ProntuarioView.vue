@@ -4,26 +4,27 @@
     <div class="right-filter">
       <Button v-on:click="showModal" label="Novo Prontuário"></Button>
       <Button
-      v-on:click="
-          () => {
-            filterSidebar = true;
-          }
-          "
-        icon="pi pi-filter"
+        v-on:click="
+            () => {
+              filterSidebar = true;
+            }
+            "
+          icon="pi pi-filter"
         ></Button>
-      <Paginator :rows="10" :totalRecords="120" :rowsPerPageOptions="[10, 20, 30]"></Paginator>
 
       <SideFilterComponentVue @close="closeFilter" v-show="filterSidebar">
         <template v-slot:body>
           <div class="form-group">
             <label for="">Mostrar listas </label>
-            <select
+            <!-- <select
               class="is-small input is-fullwidth"
               v-model="filterSelected"
             >
               <option value="finalizado">Tratamento finalizado</option>
               <option value="tratamento">Em tratamento</option>
-            </select>
+            </select> -->
+            <Dropdown v-model="filterSelected"  :options="optionsFiltro" optionLabel="name" optionValue="value" placeholder="Selecione uma opção" option  class="inputdropdown" />
+
           </div>
         </template>
 
@@ -52,10 +53,8 @@
       align-items: center;
       "
   >
-  Filtro:
-  <span style="font-weight: bold; font-size: 15px">{{
-    `   ${showFilterSelected}`
-  }}</span>
+    Filtro:
+  <span style="font-weight: bold; font-size: 15px">{{`   ${showFilterSelected}`  }}</span>
   </div>
   <section class="content-table">
     <DataTable
@@ -83,10 +82,10 @@
       <template #body="slotProps">
         <div style="display: flex">
           <span
-          v-if="slotProps.data.status != 'Tratamento finalizado'"
-          v-on:click="showModalConfirm(slotProps.data)"
-          v-tooltip.bottom="'finalizar tratamento'"
-          class="material-symbols-outlined btn"
+            v-if="slotProps.data.status != 'finalizado'"
+            v-on:click="showModalConfirm(slotProps.data)"
+            v-tooltip.bottom="'finalizar tratamento'"
+            class="material-symbols-outlined btn"
           >
           check_circle
         </span>
@@ -110,51 +109,22 @@
   
   <template v-slot:body>
     <div class="row-group">
-      <div class="form-group">
+      <div class="form-group" style="width: 100%">
         <label for="">Nº do prontuário</label>
-        <input
-          type="text"
-          autocomplete="off"
-          style="width: 300px"
-          v-model="novoProntuario.prontuario"
-          class="input is-small is-full"
-          id="setBoxStudent"
-          />
-          </div>
-          <div class="form-group">
-            <label for="">Paciente</label>
-            <select
-            autocomplete="off"
-            style="width: 300px"
-            v-model="novoProntuario.paciente"
-            class="input is-small is-full"
-            >
-            <option :value="0">Selecione</option>
-            <option
-            :value="item.id"
-            v-for="(item, index) in listPaciente"
-            :key="index"
-            >
-            {{ item.nome }}
-          </option>
-        </select>
+        <InputText type="text" id="" v-model="novoProntuario.prontuario" style="width: 100%"></InputText>
+      </div>
+      <div class="form-group" style="width: 100%">
+        <label for="">Paciente</label>
+        <Dropdown v-model="novoProntuario.paciente"  :options="listPaciente" optionLabel="nome" optionValue="id" placeholder="Selecione uma opção" option style="width: 100%;" />
       </div>
     </div>
   </template>
   
   <template v-slot:footer>
-    <button
-    class="button is-info is-small"
-    @click="createNewProntuario(true)"
-    >
-    salvar e Novo
-  </button>
-  <button
-  class="button is-success is-small"
-  @click="createNewProntuario(false)"
-  >
-  salvar
-</button>
+   
+  <Button @click="createNewProntuario(true)" label="Savar e Novo"></Button>
+  <Button  @click="createNewProntuario(false)" label="Savar" severity="success" ></Button>
+  
 </template>
 </ModalComponentVue>
 
@@ -184,12 +154,14 @@
     </template>
 
     <template v-slot:footer>
-      <button
+      <!-- <button
         class="button is-success is-small"
         @click="updateProntuario(false)"
       >
         Finalizar tratamento
-      </button>
+      </button> -->
+
+      <Button  @click="updateProntuario(false)" label="Finaliza tratamento"> </Button>
     </template>
   </ModalComponentVue>
 </template>
@@ -202,18 +174,22 @@ import FilterComponent from '@/components/FilterComponent.vue';
 import Column from 'primevue/column';
 import SideFilterComponentVue from '@/components/SideFilterComponent.vue';
 import LoadingComponentVue from '@/components/LoadingComponent.vue'
+import Dropdown from 'primevue/dropdown';
 import ModalComponentVue from '@/components/ModalSmallComponent.vue'
+import InputText from 'primevue/inputtext';
 export default {
   
     components: {
-            DataTable,
-            LoadingComponentVue,
-            Column,
-            Button,
-            FilterComponent,
-            ModalComponentVue,
-            SideFilterComponentVue
-        },
+      InputText,
+      Dropdown,
+      DataTable,
+      LoadingComponentVue,
+      Column,
+      Button,
+      FilterComponent,
+      ModalComponentVue,
+      SideFilterComponentVue
+    },
     data() {
         return {
             inputConfirmModalProntuario:{},
@@ -221,6 +197,11 @@ export default {
                 prontuario: "",
                 paciente: 0
             },
+
+            optionsFiltro : [
+              { name: 'Em tratamento', value: 'ativo'},
+              { name: 'Tratamento Finalizado', value: 'finalizado'}
+            ],
             isLoading: false,
             listPaciente: [],
 
@@ -230,8 +211,8 @@ export default {
             isVisibleModalNovo: false,
 
             filterSidebar : false,
-            filterSelected : 'tratamento',
-            showFilterSelected: 'tratamento',
+            filterSelected : 'ativo',
+            showFilterSelected: 'Tratamento',
 
         }
     },
@@ -244,7 +225,7 @@ export default {
                 const resp = await http.get('prontuario/'+this.filterSelected);
                 this.listTableProntuarios = resp.data;
 
-                this.showFilterSelected = resp.data[0].status;
+                this.showFilterSelected = this.filterSelected == 'ativo'? 'Tratamento' : 'Finalizado';
                 this.statusOrdem = resp.data[0].status;
                 this.isLoading = false;
                 this.filterSidebar = false;
@@ -391,5 +372,9 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.inputdropdown{
+  width: 100%;
 }
 </style>
