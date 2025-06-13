@@ -1,6 +1,6 @@
 <script>
     import Toast from 'primevue/toast';
-    import axios from 'axios';
+import { http } from '@/http';
     export default{
         components: {
             Toast,
@@ -23,7 +23,7 @@
                         login : this.credential.login,
                         senha : this.credential.password
                     }
-                    const item = await axios.post(this.API_URL+'/user/login', temp)
+                    const item = await http.post('user/login', temp)
 
                     this.isLoading = false;
                     localStorage.setItem('token_access', item.data.token_acess)
